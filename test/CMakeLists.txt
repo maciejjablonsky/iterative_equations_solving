@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.15)
+project(tests C)
+include_directories(../vendor/ceedling/vendor/unity/src)
+include_directories(../vendor/ceedling/vendor/cmock/src)
+include_directories(../vendor/ceedling/vendor/c_exception/lib)
+set(TESTS_SOURCE test_matrix.c)
+add_executable(dummy_test ${TESTS_SOURCE})
