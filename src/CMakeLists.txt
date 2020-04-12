@@ -5,5 +5,5 @@ set(CMAKE_C_FLAGS "${C_FLAGS}")
 include_directories(include)
 include_directories(internals)
 
-set(SOURCE_FILES matrix.c main.c)
+set(SOURCE_FILES matrix.c main.c matrix_internals.c)
 add_executable(isolve ${SOURCE_FILES})
