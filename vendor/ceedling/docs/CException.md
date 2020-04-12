@@ -123,7 +123,7 @@ API
 
 `Try` is a macro which starts a protected block.  It MUST be followed by
 a pair of braces or a single protected line (similar to an 'if'),
-enclosing the data that is to be protected.  It **must** be followed by a
+enclosing the elements that is to be protected.  It **must** be followed by a
 `Catch` block (don't worry, you'll get compiler errors to let you know if
 you mess any of that up).
 

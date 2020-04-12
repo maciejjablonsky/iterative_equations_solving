@@ -9,7 +9,7 @@ class ConfiguratorValidator
   
   constructor :file_wrapper, :stream_wrapper, :system_wrapper
 
-  # walk into config hash verify existence of data at key depth
+  # walk into config hash verify existence of elements at key depth
   def exists?(config, *keys)
     hash  = retrieve_value(config, keys)
     exist = !hash[:value].nil?

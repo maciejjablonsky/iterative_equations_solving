@@ -21,11 +21,11 @@ bool MATRIX__are_params_valid(matrix_ctor_params_t *params) {
 }
 
 bool MATRIX__copy_data(matrix_t *self, matrix_ctor_params_t *params) {
-    self->data = calloc(params->length, sizeof(matrix_e_t));
-    if (self->data == NULL) {
+    self->elements = calloc(params->length, sizeof(element_t));
+    if (self->elements == NULL) {
         return false;
     }
-    memcpy(self->data, params->elements, params->length * sizeof(matrix_e_t));
+    memcpy(self->elements, params->elements, params->length * sizeof(element_t));
     return true;
 }
 

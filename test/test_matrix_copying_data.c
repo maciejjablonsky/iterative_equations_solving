@@ -11,7 +11,7 @@ void test_givenElementsToCopy_thenElementsAreCopied(void) {
 
     // then
     TEST_ASSERT_TRUE(MATRIX__copy_data(&matrix, &params));
-    TEST_ASSERT_EQUAL_MEMORY(params.elements, matrix.data, params.length * sizeof(matrix_e_t));
+    TEST_ASSERT_EQUAL_MEMORY(params.elements, matrix.elements, params.length * sizeof(element_t));
 }
 
 

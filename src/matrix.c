@@ -3,7 +3,6 @@
 #include <matrix.h>
 #include <logging.h>
 
-
 bool MATRIX__ctor(matrix_t *self, matrix_ctor_params_t *params) {
     if (!MATRIX__are_params_valid(params)) {
         return false;
@@ -16,8 +15,8 @@ bool MATRIX__ctor(matrix_t *self, matrix_ctor_params_t *params) {
 }
 
 bool MATRIX__dctor(matrix_t *self) {
-    if (self->data) {
-        free(self->data);
+    if (self->elements) {
+        free(self->elements);
     }
     return true;
 }
@@ -43,14 +42,14 @@ matrix_t *MATRIX__delete(matrix_t *matrix) {
 }
 
 matrix_t *MATRIX__transpose(matrix_t *matrix) {
-    matrix_e_t *data = (matrix_e_t *) malloc(matrix->shape.rows * matrix->shape.cols * sizeof(matrix_e_t));
+    element_t *data = (element_t *) malloc(matrix->shape.rows * matrix->shape.cols * sizeof(element_t));
     if (data == NULL) {
         return NULL;
     }
-    matrix_shape_t shape = matrix->shape;
+    shape_t shape = matrix->shape;
     for (int r = 0; r < shape.rows; ++r) {
         for (int c = 0; c < shape.cols; ++c) {
-            data[r + shape.rows * c] = matrix->data[c + shape.rows * r];
+            data[r + shape.rows * c] = matrix->elements[c + shape.rows * r];
         }
     }
     matrix_ctor_params_t params = matrix_ctor_params(.elements = data,
@@ -61,29 +60,42 @@ matrix_t *MATRIX__transpose(matrix_t *matrix) {
     return transposed;
 }
 
-matrix_t *MATRIX__dot(matrix_t *A, matrix_t *B) {
-    if (A->shape.cols != B->shape.rows) {
-        LOG_ERROR("Shapes don't match for multiplication.");
+order_t * matrix__generate_row_multiplication_order(size_t A_rows, size_t B_cols) {
+    size_t len = A_rows * B_cols;
+    order_t *order = (order_t *) malloc(len * sizeof(order_t));
+    if (!order) {
         return NULL;
     }
-    matrix_t * B_T = MATRIX__transpose(B);
-    matrix_shape_t new_shape = {A->shape.rows, B->shape.cols};
-    matrix_e_t * new_data =  (matrix_e_t*)malloc(new_shape.rows * new_shape.cols * sizeof(matrix_e_t));
-    if (new_data == NULL) {
-        return NULL;
-    }
-    for (int i = 0, length = new_shape.rows * new_shape.cols; i < length; ++i) {
-        matrix_e_t sum = 0;
-        for (int j = 0; j < A->shape.cols; ++j) {
-            sum += A->data[i*new_shape.cols + j] * B_T->data[i*new_shape.cols + j];
+    int i = 0;
+    for (int row_a = 0; row_a < A_rows; ++row_a) {
+        for (int row_b = 0; row_b < B_cols; ++row_b) {
+            order[i].a= row_a;
+            order[i].b= row_b;
+            i += 1;
         }
-        new_data[i*new_shape.cols] = sum;
     }
-    matrix_ctor_params_t params = matrix_ctor_params(.elements = new_data, .shape=new_shape, .length = new_shape.rows
-            * new_shape.cols);
-    matrix_t * C = MATRIX__new(&params);
-    MATRIX__delete(B_T);
-    free(new_data);
-    return C;
+    return order;
 }
+
+//matrix_t *matrix__multiplication(matrix_t *A, matrix_t *B) {
+//    if (A->shape.cols != B->shape.rows) {
+//        LOG_ERROR("Shapes don't match for multiplication.");
+//        return NULL;
+//    }
+//    matrix_t *B_T = MATRIX__transpose(B);
+//    shape_t result_shape = {A->shape.rows, B->shape.cols};
+//
+////    element_t *result_elements = vectors__dot_products(A->elements, B->elements, A->shape.cols);
+////
+////
+////    matrix_ctor_params_t params = matrix_ctor_params(.elements = result_elements, .shape=dot_shape,
+////                                                     .length = dot_shape.rows
+////                                                             * dot_shape.cols);
+//    matrix_t *DOT = MATRIX__new(&params);
+//    MATRIX__delete(B_T);
+//    free(result_elements);
+//    return DOT;
+//}
+
+
 

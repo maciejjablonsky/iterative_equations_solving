@@ -23,7 +23,7 @@ module Rake
 
     private
 
-    # Process one logical line of makefile data.
+    # Process one logical line of makefile elements.
     def process_line(line)
       # split on presence of task demaractor followed by space (i.e don't get confused by a colon in a win path)
       file_tasks, args = line.split(/:\s/)

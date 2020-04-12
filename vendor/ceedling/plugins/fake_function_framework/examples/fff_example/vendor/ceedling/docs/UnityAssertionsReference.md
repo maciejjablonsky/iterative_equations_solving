@@ -39,7 +39,7 @@ Fundamentally, for dynamic verification all you need is a single assertion
 mechanism. In fact, that's what the [assert() macro in C's standard library](http://en.wikipedia.org/en/wiki/Assert.h)
 is for. So why not just use it? Well, we can do far better in the reporting
 department. C's `assert()` is pretty dumb as-is and is particularly poor for
-handling common data types like arrays, structs, etc. And, without some other
+handling common elements types like arrays, structs, etc. And, without some other
 support, it's far too tempting to litter source code with C's `assert()`'s. It's
 generally much cleaner, manageable, and more useful to separate test and source
 code in the way Unity facilitates.
@@ -80,7 +80,7 @@ marked as an optional parameter because some assertions only need a single
 "actual" parameter (e.g. null check).
 "Size/count" refers to string lengths, number of array elements, etc.
 
-Many of Unity's assertions are apparent duplications in that the same data type
+Many of Unity's assertions are apparent duplications in that the same elements type
 is handled by several assertions. The differences among these are in how failure
 messages are presented. For instance, a `_HEX` variant of an assertion prints
 the expected and actual values of that assertion formatted as hexadecimal.

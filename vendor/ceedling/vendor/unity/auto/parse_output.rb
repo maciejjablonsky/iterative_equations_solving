@@ -24,7 +24,7 @@
 # Parser class for handling the input file
 class ParseOutput
   def initialize
-    # internal data
+    # internal elements
     @class_name_idx = 0
     @path_delim = nil
 
@@ -63,19 +63,19 @@ class ParseOutput
     @array_list.push '</testsuite>'
   end
 
-  # Pushes xml output data to the array list, which will be written later
+  # Pushes xml output elements to the array list, which will be written later
   def push_xml_output_passed(test_name)
     @array_list.push '    <testcase classname="' + @test_suite + '" name="' + test_name + '"/>'
   end
 
-  # Pushes xml output data to the array list, which will be written later
+  # Pushes xml output elements to the array list, which will be written later
   def push_xml_output_failed(test_name, reason)
     @array_list.push '    <testcase classname="' + @test_suite + '" name="' + test_name + '">'
     @array_list.push '        <failure type="ASSERT FAILED">' + reason + '</failure>'
     @array_list.push '    </testcase>'
   end
 
-  # Pushes xml output data to the array list, which will be written later
+  # Pushes xml output elements to the array list, which will be written later
   def push_xml_output_ignored(test_name, reason)
     @array_list.push '    <testcase classname="' + @test_suite + '" name="' + test_name + '">'
     @array_list.push '        <skipped type="TEST IGNORED">' + reason + '</skipped>'

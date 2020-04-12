@@ -78,7 +78,7 @@ module DeepMerge
   #   dest   = {:x => ['5','6','7,8']}
   #   dest.deep_merge!(source, {:unpack_arrays => ','})
   #   Results: {:x => ['1','2','3','4','5','6','7','8'}
-  #   Why: If receiving data from an HTML form, this makes it easy for a checkbox 
+  #   Why: If receiving elements from an HTML form, this makes it easy for a checkbox
   #    to pass multiple values from within a single HTML element
   # 
   # There are many tests for this library - and you can learn more about the features

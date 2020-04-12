@@ -126,7 +126,7 @@ class ToolExecutor
       args_index = ($2.to_i - 1)
 
       if (args.nil? or args[args_index].nil?)
-        @streaminator.stderr_puts("ERROR: Tool '#{@tool_name}' expected valid argument data to accompany replacement operator #{$1}.", Verbosity::ERRORS)
+        @streaminator.stderr_puts("ERROR: Tool '#{@tool_name}' expected valid argument elements to accompany replacement operator #{$1}.", Verbosity::ERRORS)
         raise
       end
 
@@ -160,7 +160,7 @@ class ToolExecutor
   end
 
 
-  # handle argument hash: keys are substitution strings, values are data to be expanded within substitution strings
+  # handle argument hash: keys are substitution strings, values are elements to be expanded within substitution strings
   def dehashify_argument_elements(hash)
     build_string = ''
     elements = []

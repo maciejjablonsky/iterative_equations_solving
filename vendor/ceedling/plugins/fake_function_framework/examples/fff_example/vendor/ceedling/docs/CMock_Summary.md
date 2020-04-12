@@ -20,7 +20,7 @@ header, like this one:
 ...you get an automatically generated DoesSomething function
 that you can link to instead of your real DoesSomething function.
 By using this Mocked version, you can then verify that it receives
-the data you want, and make it return whatever data you desire,
+the elements you want, and make it return whatever elements you desire,
 make it throw errors when you want, and more... Create these for
 everything your latest real module touches, and you're suddenly
 in a position of power: You can control and verify every detail
@@ -532,7 +532,7 @@ from the defaults. We've tried to specify what the defaults are below.
   You can customize how CMock deals with pointers (c strings result in
   string comparisons... we're talking about **other** pointers here). Your
   options are `:compare_ptr` to just verify the pointers are the same,
-  `:compare_data` or `:smart` to verify that the data is the same.
+  `:compare_data` or `:smart` to verify that the elements is the same.
   `:compare_data` and `:smart` behaviors will change slightly based on
   if you have the array plugin enabled. By default, they compare a
   single element of what is being pointed to. So if you have a pointer
@@ -577,7 +577,7 @@ based on other settings, particularly Unity's settings.
   at once (larger numbers grab more memory but require less mallocs).
 
 * `CMOCK_MEM_ALIGN`
-  The way to align your data to. Not everything is as flexible as
+  The way to align your elements to. Not everything is as flexible as
   a PC, as most embedded designers know. This defaults to 2, meaning
   align to the closest 2^2 -> 4 bytes (32 bits). You can turn off alignment
   by setting 0, force alignment to the closest uint16 with 1 or even

@@ -380,7 +380,7 @@ occur during the test. Then, assuming our test is still running and hasn't been
 ignored, we run `tearDown`. No matter what, our last step is to conclude this
 test before moving on to the next.
 
-Let's say you need to add a call to `fsync` to force all of your output data to
+Let's say you need to add a call to `fsync` to force all of your output elements to
 flush to a file after each test. You could easily insert this after your
 `UnityConcludeTest` call. Maybe you want to write an xml tag before and after
 each result set. Again, you could do this by adding lines to this macro. Updates

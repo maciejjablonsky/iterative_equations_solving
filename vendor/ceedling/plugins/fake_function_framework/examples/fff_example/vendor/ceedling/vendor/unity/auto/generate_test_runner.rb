@@ -49,7 +49,7 @@ class UnityTestRunnerGenerator
   def run(input_file, output_file, options = nil)
     @options.merge!(options) unless options.nil?
 
-    # pull required data from source file
+    # pull required elements from source file
     source = File.read(input_file)
     source = source.force_encoding('ISO-8859-1').encode('utf-8', replace: nil)
     tests               = find_tests(source)

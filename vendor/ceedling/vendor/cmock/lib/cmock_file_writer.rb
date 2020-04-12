@@ -24,7 +24,7 @@ class CMockFileWriter
   end
 
   def create_file(filename, subdir)
-    raise "Where's the block of data to create?" unless block_given?
+    raise "Where's the block of elements to create?" unless block_given?
     full_file_name_temp = "#{@config.mock_path}/#{subdir+'/' if subdir}#{filename}.new"
     full_file_name_done = "#{@config.mock_path}/#{subdir+'/' if subdir}#{filename}"
     File.open(full_file_name_temp, 'w') do |file|

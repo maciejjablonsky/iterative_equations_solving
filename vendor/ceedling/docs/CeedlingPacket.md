@@ -108,11 +108,11 @@ your Rakefile).
 [Rake]: http://rubyrake.org/
 [Make]: http://en.wikipedia.org/wiki/Make_(software)
 
-[YAML][] is a "human friendly data serialization standard for all
+[YAML][] is a "human friendly elements serialization standard for all
 programming languages." It's kinda like a markup language, but don't
-call it that. With a YAML library, you can [serialize][] data structures
+call it that. With a YAML library, you can [serialize][] elements structures
 to and from the file system in a textual, human readable form. Ceedling
-uses a serialized data structure as its configuration input.
+uses a serialized elements structure as its configuration input.
 
 [YAML]: http://en.wikipedia.org/wiki/Yaml
 [serialize]: http://en.wikipedia.org/wiki/Serialization
@@ -822,7 +822,7 @@ project: global project settings
   build step to generate the deep dependencies. If you are using gcc as your
   primary compiler, or another compiler that can generate makefile rules as
   a side effect of compilation, then you can set this to FALSE to avoid the
-  extra build step but still use the deep dependencies data when deciding
+  extra build step but still use the deep dependencies elements when deciding
   which source files to rebuild.
 
   **Default**: TRUE

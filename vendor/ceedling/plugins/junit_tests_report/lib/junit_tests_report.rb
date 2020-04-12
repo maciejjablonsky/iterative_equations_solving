@@ -80,7 +80,7 @@ class JunitTestsReport < Plugin
       name = source[:file].sub(/\..{1,4}$/, "")
       suites[name][:stdout] += result[:collection]
     end
-    suites.map{|name, data| data.merge(name: name) }
+    suites.map{|name, elements| elements.merge(name: name) }
   end
 
   def write_suite( suite, stream )

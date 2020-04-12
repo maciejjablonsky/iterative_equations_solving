@@ -2,6 +2,7 @@
 #include "matrix.h"
 #include "mock_matrix_internals.h"
 
+
 void test_givenValidParameters_thenCtorInitializesProperly(void) {
     // given
     MATRIX__are_params_valid_fake.return_val = true;

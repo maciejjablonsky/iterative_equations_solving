@@ -183,7 +183,7 @@ test_givenNewDataIsAvailable_whenTheDisplayHasUpdated_thenTheEventIsComplete(voi
 {
     // A mock function for capturing the callback handler function pointer.
     void(*registeredCallback)(void) = 0;
-    void mock_display_updateData(int data, void(*callback)(void))
+    void mock_display_updateData(int elements, void(*callback)(void))
     {
         //Save the callback function.
         registeredCallback = callback;

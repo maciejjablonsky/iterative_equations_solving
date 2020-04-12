@@ -9,5 +9,8 @@ include_directories(../build/test/mocks)
 include_directories(../vendor/ceedling/plugins/fake_function_framework/src)
 set(TESTS_SOURCE test_matrix.c
         test_matrix_copying_data.c
-        test_matrix_ctor_validation.c test_memory_allocation_failures.c test_matrix_operations.c)
+        test_matrix_ctor_validation.c
+        test_memory_allocation_failures.c
+        test_matrix_operations.c
+        test_vector.c)
 add_executable(dummy_test ${TESTS_SOURCE})
