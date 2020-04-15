@@ -47,8 +47,8 @@ struct matrix * (mat);\
 do {\
         struct matrix_ctor_params params = matrix_ctor_params(.elements=(element_t[]){\
                                                                       1, 2, 3, 4, 5,\
-                                                                      2, 3, 4, 5, 6,\
-                                                                      3, 4, 5, 6, 7\
+                                                                      6, 7, 8, 9, 10,\
+                                                                      11, 12, 13, 14, 15\
                                                               }, .shape = { .rows = 3, .cols=5 }, .length = 15);\
         (mat) = MATRIX__new(&params);\
         TEST_ASSERT_NOT_NULL(mat);\
@@ -57,28 +57,28 @@ do {\
 #undef expectedResult
 #define expectedResult \
 {\
-        1,2,3,\
-        2,3,4,\
-        3,4,5,\
-        4,5,6,\
-        5,6,7\
+        1, 6, 11,\
+        2, 7, 12,\
+        3, 8, 13,\
+        4, 9, 14,\
+        5, 10, 15\
 }
 
 #undef thenTransposedIs
-#define thenTransposedIs(expected, actual)\
+#define thenTransposedIs(result)\
 do {\
-        size_t num = sizeof(expected)/sizeof(*(expected));\
-        TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected, actual, num);\
+        element_t expected[] = expectedResult;\
+        size_t num = sizeof(expected)/sizeof(*expected);\
+        TEST_ASSERT_EQUAL_MEMORY(&((struct mat2d_shape){.rows = 5, .cols=3}), &result->shape, sizeof(struct mat2d_shape));\
+        TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected, result->elements, num);\
 } while(0)
 
-        //TODO figure out why it fails
 void test_givenMatrix_whenTransposing_thenResultMatrixIsValid(void) {
         givenMatrix(matA);
         
         struct matrix * result = MATRIX__transpose(matA);
-        
-        element_t expected[] = expectedResult;
-        thenTransposedIs(expected, result->elements);
+
+        thenTransposedIs(result);
 }
 
 
