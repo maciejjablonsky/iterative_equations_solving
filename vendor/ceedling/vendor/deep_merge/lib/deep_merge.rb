@@ -60,7 +60,7 @@ module DeepMerge
   #      Set to true to get console output of merge process for debugging
   #
   # Selected Options Details:
-  # :knockout_prefix => The purpose of this is to provide a way to remove elements 
+  # :knockout_prefix => The purpose of this is to provide a way to remove elements
   #   from existing Hash by specifying them in a special way in incoming hash
   #    source = {:x => ['--1', '2']}
   #    dest   = {:x => ['1', '3']}

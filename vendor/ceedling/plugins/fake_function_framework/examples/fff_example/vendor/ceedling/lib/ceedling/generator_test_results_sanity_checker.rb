@@ -17,7 +17,7 @@ class GeneratorTestResultsSanityChecker
     ceedling_failures_count  = results[:failures].size
     ceedling_tests_summation = (ceedling_ignores_count + ceedling_failures_count + results[:successes].size)
 
-    # Exit code handling is not a sanity check that can always be performed because 
+    # Exit code handling is not a sanity check that can always be performed because
     # command line simulators may or may not pass through Unity's exit code
     if (@configurator.sanity_checks >= TestResultsSanityChecks::THOROUGH)
       # many platforms limit exit codes to a maximum of 255

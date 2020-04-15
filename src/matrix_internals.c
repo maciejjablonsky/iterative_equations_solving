@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-bool MATRIX__are_params_valid(matrix_ctor_params_t *params) {
+bool MATRIX__are_params_valid(struct matrix_ctor_params *params) {
     if (params == NULL) {
         LOG_ERROR("Initial parameters for full matrix not given.");
         return false;
@@ -20,7 +20,7 @@ bool MATRIX__are_params_valid(matrix_ctor_params_t *params) {
     return true;
 }
 
-bool MATRIX__copy_data(matrix_t *self, matrix_ctor_params_t *params) {
+bool MATRIX__copy_data(struct matrix *self, struct matrix_ctor_params *params) {
     self->elements = calloc(params->length, sizeof(element_t));
     if (self->elements == NULL) {
         return false;

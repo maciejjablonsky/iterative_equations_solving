@@ -51,7 +51,7 @@ module DIY #:nodoc:#
       self.from_yaml(File.read(fname), extra_inputs)
     end
 
-    # Return a reference to the object named.  If necessary, the object will 
+    # Return a reference to the object named.  If necessary, the object will
     # be instantiated on first use.  If the object is non-singleton, a new
     # object will be produced each time.
     def get_object(obj_name)
@@ -77,7 +77,7 @@ module DIY #:nodoc:#
     end
     alias :[] :get_object
 
-    # Inject a named object into the Context.  This must be done before the Context has instantiated the 
+    # Inject a named object into the Context.  This must be done before the Context has instantiated the
     # object in question.
     def set_object(obj_name,obj)
       key = obj_name.to_s
