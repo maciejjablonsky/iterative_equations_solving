@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "vector.h"
 
+
 struct mat2d_shape {
 	size_t rows;
 	size_t cols;
@@ -12,18 +13,16 @@ struct mat2d_shape {
 struct matrix {
     element_t * elements;
     struct mat2d_shape shape;
-} ;
-
-struct matrix_multiplication_order {
-    size_t row_a;
-    size_t row_b;
 };
+
+enum matrix_storage_type {DEEP_COPY, SHALLOW_COPY};
 
 struct matrix_ctor_params {
     struct mat2d_shape shape;
     element_t * elements;
     size_t length;
-} ;
+    enum matrix_storage_type storage;
+};
 #define matrix_ctor_params(...) ((struct matrix_ctor_params){__VA_ARGS__})
 
 
@@ -41,9 +40,9 @@ struct matrix * matrix__transpose(struct matrix * self);
 
 struct matrix * matrix__multiplication(struct matrix * A, struct matrix * B);
 
-bool MATRIX__are_params_valid(struct matrix_ctor_params *params);
+bool matrix__are_params_valid(struct matrix_ctor_params *params);
 
-bool MATRIX__copy_data(struct matrix *self, struct matrix_ctor_params *params);
+bool matrix__copy_data(struct matrix *self, struct matrix_ctor_params *params);
 
 
 element_t *

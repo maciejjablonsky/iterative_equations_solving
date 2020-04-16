@@ -7,3 +7,4 @@ include_directories(internals)
 
 set(SOURCE_FILES matrix.c main.c matrix_internals.c vector.c)
 add_executable(isolve ${SOURCE_FILES})
+add_executable(time ${SOURCE_FILES})

@@ -7,8 +7,6 @@
 
 typedef float element_t;
 
-
-
 element_t vector__dot_product(const element_t *vecA, const element_t *vecB, size_t len);
 
 element_t *
