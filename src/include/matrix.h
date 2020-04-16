@@ -29,17 +29,22 @@ struct matrix_ctor_params {
 
 #define POWER_OF_2(N) ((size_t)1u<<(N))
 
-bool MATRIX__ctor(struct matrix * self, struct matrix_ctor_params * params);
+bool matrix__ctor(struct matrix * self, struct matrix_ctor_params * params);
 
-bool MATRIX__dctor(struct matrix * self);
+bool matrix__dctor(struct matrix * self);
 
-struct matrix * MATRIX__new(struct matrix_ctor_params * params);
+struct matrix * matrix__new(struct matrix_ctor_params * params);
 
-struct matrix * MATRIX__delete(struct matrix * self);
+struct matrix * matrix__delete(struct matrix * self);
 
-struct matrix * MATRIX__transpose(struct matrix * self);
+struct matrix * matrix__transpose(struct matrix * self);
 
 struct matrix * matrix__multiplication(struct matrix * A, struct matrix * B);
+
+bool MATRIX__are_params_valid(struct matrix_ctor_params *params);
+
+bool MATRIX__copy_data(struct matrix *self, struct matrix_ctor_params *params);
+
 
 element_t *
 matrix__multiply_rows(element_t *mat_A, element_t *mat_B, size_t rows_A, size_t rows_B, size_t row_len);

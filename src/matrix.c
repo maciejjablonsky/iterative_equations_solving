@@ -3,7 +3,7 @@
 #include <matrix.h>
 #include <logging.h>
 
-bool MATRIX__ctor(struct matrix *self, struct matrix_ctor_params *params) {
+bool matrix__ctor(struct matrix *self, struct matrix_ctor_params *params) {
         if (!MATRIX__are_params_valid(params)) {
                 return false;
         }
@@ -14,48 +14,48 @@ bool MATRIX__ctor(struct matrix *self, struct matrix_ctor_params *params) {
         return true;
 }
 
-bool MATRIX__dctor(struct matrix *self) {
+bool matrix__dctor(struct matrix *self) {
         if (self->elements) {
                 free(self->elements);
         }
         return true;
 }
 
-struct matrix *MATRIX__new(struct matrix_ctor_params *params) {
+struct matrix *matrix__new(struct matrix_ctor_params *params) {
         struct matrix *self = calloc(1, sizeof(*self));
         if (self == NULL) {
                 return NULL;
         }
-        if (!MATRIX__ctor(self, params)) {
+        if (!matrix__ctor(self, params)) {
                 free(self);
                 return NULL;
         }
         return self;
 }
 
-struct matrix *MATRIX__delete(struct matrix *matrix) {
-        if (matrix) {
-                MATRIX__dctor(matrix);
-                free(matrix);
+struct matrix *matrix__delete(struct matrix *self) {
+        if (self) {
+                matrix__dctor(self);
+                free(self);
         }
         return NULL;
 }
 
-struct matrix *MATRIX__transpose(struct matrix *matrix) {
-        element_t *data = malloc(matrix->shape.rows * matrix->shape.cols * sizeof(*data));
+struct matrix *matrix__transpose(struct matrix *self) {
+        element_t *data = malloc(self->shape.rows * self->shape.cols * sizeof(*data));
         if (data == NULL) {
                 return NULL;
         }
-        struct mat2d_shape shape = matrix->shape;
+        struct mat2d_shape shape = self->shape;
         for (int r = 0; r < shape.rows; ++r) {
                 for (int c = 0; c < shape.cols; ++c) {
-                        data[r + shape.rows * c] = matrix->elements[c + shape.cols * r];
+                        data[r + shape.rows * c] = self->elements[c + shape.cols * r];
                 }
         }
         struct matrix_ctor_params params = matrix_ctor_params(.elements = data,
-                                                              .length = matrix->shape.rows * matrix->shape.cols,
+                                                              .length = self->shape.rows * self->shape.cols,
                                                               .shape={ .rows=shape.cols, .cols=shape.rows });
-        struct matrix *transposed = MATRIX__new(&params);
+        struct matrix *transposed = matrix__new(&params);
         free(data);
         return transposed;
 }
@@ -77,25 +77,23 @@ matrix__multiply_rows(element_t *mat_A, element_t *mat_B, size_t rows_A, size_t 
         return result;
 }
 
-//struct matrix *matrix__multiplication(struct matrix *A, struct matrix *B) {
-//    if (A->shape.cols != B->shape.rows) {
-//        LOG_ERROR("Shapes don't match for multiplication.");
-//        return NULL;
-//    }
-//    struct matrix *B_T = MATRIX__transpose(B);
-//    struct mat2d_shape result_shape = {A->shape.rows, B->shape.cols};
-//
-////    element_t *result_elements = vectors__dot_products(A->elements, B->elements, A->shape.cols);
-////
-////
-////    matrix_ctor_params_t params = matrix_ctor_params(.elements = result_elements, .shape=dot_shape,
-////                                                     .length = dot_shape.rows
-////                                                             * dot_shape.cols);
-//    struct matrix *DOT = MATRIX__new(&params);
-//    MATRIX__delete(B_T);
-//    free(result_elements);
-//    return DOT;
-//}
+struct matrix *matrix__multiplication(struct matrix *A, struct matrix *B) {
+    if (A->shape.cols != B->shape.rows) {
+        LOG_ERROR("Shapes don't match for multiplication.");
+        return NULL;
+    }
+    struct matrix *B_T = matrix__transpose(B);
+    struct mat2d_shape result_shape = {A->shape.rows, B->shape.cols};
+
+    element_t * result_elements = matrix__multiply_rows(A->elements, B_T->elements, A->shape.rows, B_T->shape.rows, A->shape.cols);
+    struct matrix_ctor_params params = matrix_ctor_params(.elements = result_elements, .shape=result_shape,
+                                                     .length = result_shape.rows
+                                                             * result_shape.cols);
+    struct matrix *result = matrix__new(&params);
+    matrix__delete(B_T);
+    free(result_elements);
+    return result;
+}
 
 
 

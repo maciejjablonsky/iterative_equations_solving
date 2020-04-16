@@ -12,7 +12,7 @@ do {\
                                                                       6, 7, 8, 9, 10,\
                                                                       11, 12, 13, 14, 15\
                                                               }, .shape = { .rows = 3, .cols=5 }, .length = 15);\
-        (mat) = MATRIX__new(&params);\
+        (mat) = matrix__new(&params);\
         TEST_ASSERT_NOT_NULL(mat);\
 } while (0)
 
@@ -27,8 +27,7 @@ do {\
 }
 
 #undef thenTransposedIs
-#define thenTransposedIs(result)\
-do {\
+#define thenTransposedIs(result) do {\
         element_t expected[] = expectedResult;\
         size_t num = sizeof(expected)/sizeof(*expected);\
         TEST_ASSERT_EQUAL_MEMORY(&((struct mat2d_shape){.rows = 5, .cols=3}), &result->shape, sizeof(struct mat2d_shape));\
@@ -38,7 +37,7 @@ do {\
 void test_givenMatrix_whenTransposing_thenResultMatrixIsValid(void) {
         givenMatrix(matA);
 
-        struct matrix *result = MATRIX__transpose(matA);
+        struct matrix *result = matrix__transpose(matA);
 
         thenTransposedIs(result);
 }
@@ -68,8 +67,7 @@ size_t (row_len) = 3;
 };
 
 #undef thenResultArrayIsValid
-#define thenResultArrayIsValid(expected, actual) \
-do {\
+#define thenResultArrayIsValid(expected, actual) do {\
         size_t len = sizeof(expected)/sizeof(*(expected));\
         TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected, actual, len);\
 } while (0)
@@ -84,27 +82,56 @@ void test_givenTwoMatrixLikeArray_whenScalarMultiplyingByRowsWithOrder_thenResul
 }
 
 
-#undef givenTwoMatrices
-#define givenTwoMatrices(mat_a, mat_b)\
+#undef givenTwoMatricesForMultiplication
+#define givenTwoMatricesForMultiplication(mat_a, mat_b)\
 struct matrix * (mat_a);\
 struct matrix * (mat_b);\
 do {\
-        struct matrix_ctor_params params_a = matrix_ctor_params(.elements = (element_t[]){\
-                                                                        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 },\
-                                                                .shape = { .rows = 3, .cols=4 }, .length = 12);\
-        mat_a = MATRIX__new(&params_a);\
-        struct matrix_ctor_params params_b = matrix_ctor_params(.elements = (element_t[]){\
-                                                                        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 },\
-                                                                .shape = { .rows = 3, .cols=4 }, .length = 12);\
-        mat_b = MATRIX__new(&params_b);\
+        struct matrix_ctor_params params_a = {\
+                .elements = (element_t[]) {\
+                        1, 2, 3,\
+                        4, 5, 6},\
+                .shape = {.rows = 2, .cols=3},\
+                .length = 6};\
+        struct matrix_ctor_params params_b = {\
+                .elements = (element_t[]) {\
+                        1, 2, 3, 4,\
+                        5, 6, 7, 8,\
+                        9, 10, 11, 12},\
+                .shape = {.rows = 3, .cols=4},\
+                .length = 12};\
+        (mat_a) = matrix__new(&params_a);\
+        (mat_b) = matrix__new(&params_b);\
         TEST_ASSERT_NOT_NULL(mat_a);\
         TEST_ASSERT_NOT_NULL(mat_b);\
-} while (0);
+} while (0)
+
+#undef thenResultMatrixIs
+#define thenResultMatrixIs(expected, actual) do {\
+        size_t num = expected->shape.cols * expected->shape.rows;\
+        TEST_ASSERT_EQUAL_FLOAT_ARRAY((expected)->elements, (actual)->elements, num);\
+} while(0)
+
+#undef expectedResult
+#define expectedResult(expected) \
+struct matrix * (expected);\
+do {\
+        struct matrix_ctor_params params = {\
+                .elements = (element_t[])\
+                        {38, 44, 50, 56,\
+                         83, 98, 113, 128},\
+                         .shape = {.rows = 2, .cols = 4}, .length = 8};\
+        (expected) = matrix__new(&params);\
+        TEST_ASSERT_NOT_NULL(expected);\
+} while(0)
 
 
 void test_givenTwoMatrices_whenMultiplyingThem_thenResultMatrixIsValid(void) {
-        givenTwoMatrices(matA, matB);
+        givenTwoMatricesForMultiplication(matA, matB);
 
-//	struct matrix * actual_result = MATRIX__
+        struct matrix *result = matrix__multiplication(matA, matB);
+
+        expectedResult(expected);
+        thenResultMatrixIs(expected, result);
 }
 
