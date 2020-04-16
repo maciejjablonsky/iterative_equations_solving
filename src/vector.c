@@ -23,18 +23,5 @@ vectors__dot_products(element_t *vectorsA, element_t *vectorsB, size_t number_of
 	return result;
 }
 
-//element_t *vectors__dot_products_with_order(element_t *A_vectors, element_t *B_vectors, size_t number_of_vectors,
-//                                            size_t each_vector_length, const order_t *order, size_t order_len) {
-//	element_t *result = (element_t *) malloc(order_len * sizeof(element_t));
-//	if (!result) {
-//		return NULL;
-//	}
-//
-//	for (int i = 0; i < order_len; ++i) {
-//		size_t a_offset = order[i].row_a * each_vector_length;
-//		size_t b_offset = order[i].row_b * each_vector_length;
-//		result[i] = vector__dot_product(A_vectors + a_offset, B_vectors + b_offset, each_vector_length);
-//	}
-//	return result;
-//}
+
 

@@ -60,21 +60,21 @@ struct matrix *MATRIX__transpose(struct matrix *matrix) {
         return transposed;
 }
 
-struct matrix_multiplication_order *
-matrix__order_for_multiplication_with_2nd_transformed(size_t rows_A, size_t rows_B) {
-        struct matrix_multiplication_order *order = malloc(rows_A * rows_B * sizeof(*order));
-        if (!order) {
+element_t *
+matrix__multiply_rows(element_t *mat_A, element_t *mat_B, size_t rows_A, size_t rows_B, size_t row_len) {
+        size_t result_len = rows_A * rows_B;
+        element_t * result = malloc(result_len * sizeof(*result));
+        if (!result) {
                 return NULL;
         }
-        int i = 0;
-        for (int row_a = 0; row_a < rows_A; ++row_a) {
-                for (int row_b = 0; row_b < rows_B; ++row_b) {
-                        order[i].row_a = row_a;
-                        order[i].row_b = row_b;
-                        i += 1;
+        int k = 0;
+        for (int i = 0; i < rows_A; ++i) {
+                for (int j = 0; j < rows_B; ++j) {
+                        result[k] = vector__dot_product(mat_A + i * row_len, mat_B + j * row_len, row_len);
+                        ++k;
                 }
         }
-        return order;
+        return result;
 }
 
 //struct matrix *matrix__multiplication(struct matrix *A, struct matrix *B) {

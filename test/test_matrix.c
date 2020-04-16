@@ -1,45 +1,7 @@
 #include "unity.h"
 #include "matrix.h"
 #include "matrix_internals.h"
-
-#undef givenShapesOfTwoMatrices
-#define givenShapesOfTwoMatrices(shape_a, shape_b)\
-struct mat2d_shape (shape_a) = {.rows = 3, .cols = 5};\
-struct mat2d_shape (shape_b) = {.rows = 5, .cols = 3};
-
-#undef expectedResult
-#define expectedResult {\
-{0, 0},\
-{0, 1},\
-{0, 2},\
-{1, 0},\
-{1, 1},\
-{1, 2},\
-{2, 0},\
-{2, 1},\
-{2, 2}}
-
-#undef thenOrderIs
-#define thenOrderIs(expected, actual) do {\
-        char message[256];\
-        size_t orders = sizeof(expected) / sizeof(*expected);\
-        for (int i = 0; i < orders; ++i) {\
-                sprintf(message,  "row_a: %lu != %lu in %d row\n", expected[i].row_a, actual[i].row_b, i);\
-                TEST_ASSERT_EQUAL_size_t_MESSAGE(expected[i].row_a, actual[i].row_a, message);\
-                sprintf(message,  "row_b: %lu != %lu in %d row\n", expected[i].row_b, actual[i].row_b, i);\
-                TEST_ASSERT_EQUAL_size_t_MESSAGE(expected[i].row_b, actual[i].row_b, message);\
-        }\
-} while(0)
-
-void test_givenShapeOfTwoMatrices_whenGeneratingOrderOfRowMultiplication_thenOrderIs(void) {
-        givenShapesOfTwoMatrices(shapeA, shapeB);
-
-        struct matrix_multiplication_order *actual_order = matrix__order_for_multiplication_with_2nd_transformed(
-                shapeA.rows, shapeB.cols);
-
-        struct matrix_multiplication_order expected[] = expectedResult;
-        thenOrderIs(expected, actual_order);
-}
+#include "vector.h"
 
 #undef givenMatrix
 #define givenMatrix(mat)\
@@ -75,10 +37,50 @@ do {\
 
 void test_givenMatrix_whenTransposing_thenResultMatrixIsValid(void) {
         givenMatrix(matA);
-        
-        struct matrix * result = MATRIX__transpose(matA);
+
+        struct matrix *result = MATRIX__transpose(matA);
 
         thenTransposedIs(result);
+}
+
+
+#undef givenTwoMatrixLikeArrays_SecondTransposed
+#define givenTwoMatrixLikeArrays_SecondTransposed(mat_a, mat_b, rows_a, rows_b, row_len)\
+element_t (mat_a)[] = {\
+        1, 2, 3,\
+        4, 5, 6\
+};\
+element_t (mat_b)[] = {\
+        1, 5, 9,\
+        2, 6, 10,\
+        3, 7, 11,\
+        4, 8, 12,\
+};\
+size_t (rows_a) = 2;\
+size_t (rows_b) = 4;\
+size_t (row_len) = 3;
+
+#undef expectedResult
+#define expectedResult \
+{\
+  38, 44, 50, 56,\
+  83, 98, 113, 128\
+};
+
+#undef thenResultArrayIsValid
+#define thenResultArrayIsValid(expected, actual) \
+do {\
+        size_t len = sizeof(expected)/sizeof(*(expected));\
+        TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected, actual, len);\
+} while (0)
+
+void test_givenTwoMatrixLikeArray_whenScalarMultiplyingByRowsWithOrder_thenResultArrayIsValid(void) {
+        givenTwoMatrixLikeArrays_SecondTransposed(matA, matB, rowsA, rowsB, row_len);
+
+        element_t *result = matrix__multiply_rows(matA, matB, rowsA, rowsB, row_len);
+
+        element_t expected[] = expectedResult;
+        thenResultArrayIsValid(expected, result);
 }
 
 

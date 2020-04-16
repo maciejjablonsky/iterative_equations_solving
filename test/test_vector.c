@@ -11,7 +11,7 @@ size_t (len) = 5;
 
 #undef thenScalarProductIs
 #define thenScalarProductIs(expected, actual) do {\
-        TEST_ASSERT_EQUAL(expected, actual);\
+        TEST_ASSERT_EQUAL_FLOAT(expected, actual);\
 } while(0)
 
 void test_givenTwoVectorsOfSameLength_whenDotProduct_thenResultIsValidDotProduct(void) {
@@ -20,6 +20,25 @@ void test_givenTwoVectorsOfSameLength_whenDotProduct_thenResultIsValidDotProduct
 	element_t dot_product = vector__dot_product(vecA, vecB, length);
 
 	thenScalarProductIs(57, dot_product);
+}
+
+#undef givenTwoVectorsOfSameLength
+#define givenTwoVectorsOfSameLength(vecA, vecB, len) \
+element_t (vecA)[] = {54123,21245,3124,456542,52554};\
+element_t (vecB)[] = {24325,33243,2435,55353,43452};\
+size_t (len) = 5;
+
+#undef thenScalarProductIs
+#define thenScalarProductIs(expected, actual) do {\
+        TEST_ASSERT_EQUAL_FLOAT(expected, actual);\
+} while(0)
+
+void test_givenTwoVectorsOfSameLengthWithBigValues_whenDotProduct_thenResultIsValidDotProduct(void) {
+        givenTwoVectorsOfSameLength(vecA, vecB, length);
+
+        element_t dot_product = vector__dot_product(vecA, vecB, length);
+
+        thenScalarProductIs(2.95849422e10, dot_product);
 }
 
 
