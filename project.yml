@@ -87,7 +87,7 @@
 :libraries:
   :placement: :end
   :flag: "${1}"  # or "-L ${1}" for example
-  :test: []
+  :test: ["-lm"]
   :release: []
 
 :plugins:

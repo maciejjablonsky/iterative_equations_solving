@@ -5,7 +5,7 @@ set(CMAKE_C_FLAGS "${C_FLAGS}")
 include_directories(include)
 include_directories(internals)
 
-set(SOURCE_FILES matrix.c main.c matrix_internals.c vector.c direct_gauss.c)
+set(SOURCE_FILES matrix.c main.c matrix_internals.c vector.c direct_gauss.c helper.c)
 add_executable(isolve ${SOURCE_FILES})
 target_link_libraries(isolve pthread)
 add_executable(time ${SOURCE_FILES})

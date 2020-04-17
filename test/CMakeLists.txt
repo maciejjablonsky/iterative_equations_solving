@@ -10,6 +10,6 @@ include_directories(../vendor/ceedling/plugins/fake_function_framework/src)
 set(TESTS_SOURCE test_matrix.c
         test_vector.c)
 
-set(C_FLAGS "-Wall -Werror --std=c99 -O")
+#set(C_FLAGS "-Wall -Werror --std=c99 -O")
 set(CMAKE_C_FLAGS "${C_FLAGS}")
 add_executable(dummy_test ${TESTS_SOURCE})

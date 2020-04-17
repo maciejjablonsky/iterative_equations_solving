@@ -1,9 +1,8 @@
 #include "unity.h"
 #include "matrix.h"
-#include "matrix_internals.h"
-#include "vector.h"
+#include "helper.h"
 
-#undef givenMatrix
+/*#undef givenMatrix
 #define givenMatrix(mat)\
 struct matrix * (mat);\
 do {\
@@ -133,16 +132,7 @@ void test_givenTwoMatrices_whenMultiplyingThem_thenResultMatrixIsValid(void) {
 
         expectedResult(expected);
         thenResultMatrixIs(expected, result);
-}
-
-
-#undef givenBandMatrix
-#define givenBandMatrix(bandA)\
-struct matrix * (bandA) = matrix__new_band(&matrix_ctor_params(\
-        .elements=(element_t[]){1,2,3},\
-        .shape={5,5},\
-        .length= 3\
-));
+}*/
 
 #undef thenResultBandMatrixIs
 #define thenResultBandMatrixIs(expected, actual) do {\
@@ -161,8 +151,254 @@ struct matrix * (bandA) = matrix__new_band(&matrix_ctor_params(\
 }
 
 void test_bandMatrixPatternValidity(void) {
-        givenBandMatrix(bandA);
-
+        struct matrix *actual = matrix__gen_band((element_t[]) {1, 2, 3}, 3, 5, 5);
         element_t expected[] = expectedResult;
-        thenResultBandMatrixIs(expected, bandA->elements);
+        thenResultBandMatrixIs(expected, actual->elements);
+}
+
+#undef givenMatrix
+#define givenMatrix(mat) \
+struct matrix (mat) = {\
+        .elements = (element_t[]){\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4\
+        },\
+        .rows = 4,\
+        .cols = 4\
+}
+
+#undef expectedResult
+#define expectedResult (struct matrix) {\
+                .elements = (element_t[]){\
+                        1, 2, 3, 4,\
+                        0, 2, 3, 4,\
+                        0, 0, 3, 4,\
+                        0, 0, 0, 4\
+                },\
+                .rows = 4, .cols = 4\
+        }
+
+void test_triuWithDiagonal(void) {
+        givenMatrix(mat);
+
+        struct matrix *result = matrix__triu(&mat, 0);
+
+        struct matrix expected = expectedResult;
+
+        TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected.elements, result->elements, expected.rows * expected.cols);
+}
+
+#undef givenMatrix
+#define givenMatrix(mat) \
+struct matrix (mat) = {\
+        .elements = (element_t[]){\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4\
+        },\
+        .rows = 4,\
+        .cols = 4\
+}
+
+#undef expectedResult
+#define expectedResult (struct matrix) {\
+                .elements = (element_t[]){\
+                        0, 2, 3, 4,\
+                        0, 0, 3, 4,\
+                        0, 0, 0, 4,\
+                        0, 0, 0, 0\
+                },\
+                .rows = 4, .cols = 4\
+        }
+
+void test_triuRowAboveDiagonal(void) {
+        givenMatrix(mat);
+
+        struct matrix *result = matrix__triu(&mat, 1);
+
+        struct matrix expected = expectedResult;
+
+        TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected.elements, result->elements, expected.rows * expected.cols);
+
+}
+
+#undef givenMatrix
+#define givenMatrix(mat) \
+struct matrix (mat) = {\
+        .elements = (element_t[]){\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4\
+        },\
+        .rows = 4,\
+        .cols = 4\
+}
+
+#undef expectedResult
+#define expectedResult (struct matrix) {\
+                .elements = (element_t[]){\
+                        1, 0, 0, 0,\
+                        1, 2, 0, 0,\
+                        1, 2, 3, 0,\
+                        1, 2, 3, 4\
+                },\
+                .rows = 4, .cols = 4\
+        }
+
+void test_trilWithDiagonal(void) {
+        givenMatrix(mat);
+
+        struct matrix *result = matrix__tril(&mat, 0);
+
+        struct matrix expected = expectedResult;
+        TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected.elements, result->elements, expected.rows * expected.cols);
+}
+
+
+#undef givenMatrix
+#define givenMatrix(mat) \
+struct matrix (mat) = {\
+        .elements = (element_t[]){\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4\
+        },\
+        .rows = 4,\
+        .cols = 4\
+}
+
+#undef expectedResult
+#define expectedResult (struct matrix) {\
+                .elements = (element_t[]){\
+                        0, 0, 0, 0,\
+                        1, 0, 0, 0,\
+                        1, 2, 0, 0,\
+                        1, 2, 3, 0\
+                },\
+                .rows = 4, .cols = 4\
+        }
+
+void test_trilWithOneRowBelowDiagonal(void) {
+        givenMatrix(mat);
+
+        struct matrix *result = matrix__tril(&mat, 1);
+
+        struct matrix expected = expectedResult;
+        TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected.elements, result->elements, expected.rows * expected.cols);
+}
+
+
+void test_generatingOnes(void) {
+        len_t len = 5;
+        struct matrix *result = matrix__ones(len);
+
+        TEST_ASSERT_EACH_EQUAL_FLOAT(1., result->elements, len);
+        TEST_ASSERT_EQUAL(1, result->cols);
+        TEST_ASSERT_EQUAL(len, result->rows);
+}
+
+#undef givenMatrix
+#define givenMatrix(mat) \
+struct matrix * (mat) = &(struct matrix){\
+        .elements = (element_t[]){\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4\
+        },\
+        .rows = 4,\
+        .cols = 4\
+}
+
+#undef expectedResult
+#define expectedResult &(struct matrix) {\
+                .elements = (element_t[]){\
+                        0, 2, 3, 4,\
+                        1, 0, 3, 4,\
+                        1, 2, 0, 4,\
+                        1, 2, 3, 0\
+                },\
+                .rows = 4, .cols = 4\
+        }
+
+void test_givenMatrix_whenZeroOutDiagonal_thenResultIs(void) {
+        givenMatrix(mat);
+
+        matrix_zero_out_diagonal(mat);
+        struct matrix *expected = expectedResult;
+        TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected->elements, mat->elements, expected->rows * expected->cols);
+
+}
+
+
+#undef givenMatrix
+#define givenMatrix(mat) \
+struct matrix * (mat) = &(struct matrix){\
+        .elements = (element_t[]){\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4\
+        },\
+        .rows = 4,\
+        .cols = 4\
+}
+
+#undef expectedResult
+#define expectedResult &(struct matrix) {\
+                .elements = (element_t[]){\
+                        2, 4, 6, 8,\
+                        2, 4, 6, 8,\
+                        2, 4, 6, 8,\
+                        2, 4, 6, 8,\
+                },\
+                .rows = 4, .cols = 4\
+        }
+
+void test_givenMatrix_whenMultipliedBy2_thenResultIs(void) {
+        givenMatrix(mat);
+
+        matrix_multiply_by_scalar(mat, 2);
+
+        struct matrix *expected = expectedResult;
+        TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected->elements, mat->elements,
+                                      expected->rows * expected->cols);
+}
+
+#undef givenMatrix
+#define givenMatrix(mat) \
+struct matrix * (mat) = &(struct matrix){\
+        .elements = (element_t[]){\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4\
+        },\
+        .rows = 4,\
+        .cols = 4\
+}
+
+#undef expectedResult
+#define expectedResult &(struct matrix) {\
+                .elements = (element_t[]){\
+                        1, 0, 0, 0,\
+                        0, 2, 0, 0,\
+                        0, 0, 3, 0,\
+                        0, 0, 0, 4\
+                },\
+                .rows = 4, .cols = 4\
+        }
+
+void test_givenMatrix_thenDiagonalIs(void) {
+        givenMatrix(mat);
+
+        struct matrix * diagonal = matrix__diagonal(mat);
+
+        struct matrix * expected = expectedResult;
+        TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected->elements, diagonal->elements, expected->rows * expected->cols);
 }

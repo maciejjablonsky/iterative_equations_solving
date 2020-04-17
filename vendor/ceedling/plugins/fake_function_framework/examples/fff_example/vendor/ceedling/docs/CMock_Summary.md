@@ -27,7 +27,7 @@ in a position of power: You can control and verify every detail
 of your latest creation.
 
 To make that easier, CMock also gives you a bunch of functions
-like the ones below, so you can tell that generated DoesSomething
+like the vector_ones below, so you can tell that generated DoesSomething
 function how to behave for each test:
 
     void DoesSomething_ExpectAndReturn(int a, int b, int toReturn);

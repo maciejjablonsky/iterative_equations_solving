@@ -1,6 +1,8 @@
 #include "vector.h"
 #include <stdlib.h>
 
+
+
 element_t vector__dot_product(const element_t *vecA, const element_t *vecB, size_t len) {
 	element_t dot_product = 0;
 	for (int i = 0; i < len; ++i) {
@@ -21,6 +23,18 @@ vectors__dot_products(element_t *vectorsA, element_t *vectorsB, size_t number_of
 		result[i] = vector__dot_product(vectorsA + offset, vectorsB + offset, each_vector_length);
 	}
 	return result;
+}
+
+static inline long double square(long double val) {
+        return val * val;
+}
+
+long double vector_norm(struct vector *vec) {
+        long double norm = 0;
+        for (int i = 0; i < vec->len; ++i) {
+                norm += square(vec->elements[i]);
+        }
+        return sqrtl(norm);
 }
 
 

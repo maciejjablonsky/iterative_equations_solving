@@ -1,7 +1,5 @@
 #include "unity.h"
 #include "vector.h"
-#include "matrix.h"
-#include "matrix_internals.h"
 
 #undef givenTwoVectorsOfSameLength
 #define givenTwoVectorsOfSameLength(vecA, vecB, len) \
@@ -68,6 +66,17 @@ void test_givenTwoArraysOfVectors_whenScalarMultiplyingCorrespondingVectors_then
 	thenResultVectorIs(expected, actual_result);
 }
 
+#undef givenVector
+#define givenVector(vec) struct vector * (vec) = &(struct vector) {\
+                .elements=(element_t[]){\
+                        4, 9, 16\
+                },\
+                .len = 3\
+        }
 
+void test_vectorNorm(void) {
+        givenVector(vec);
 
-
+        long double norm = vector_norm(vec);
+        TEST_ASSERT_EQUAL_FLOAT(18.788294228055936, norm);
+}

@@ -96,7 +96,7 @@ class PreprocessinatorIncludesHandler
     dependencies = make_rule.split.find_all {|path| path.end_with?(hdr_ext) }.uniq
     dependencies.map! {|hdr| hdr.gsub('\\','/') }
 
-    # Separate the real files form the annotated ones and remove the '@@@@'
+    # Separate the real files form the annotated vector_ones and remove the '@@@@'
     annotated_headers, real_headers = dependencies.partition {|hdr| hdr =~ /^@@@@/ }
     annotated_headers.map! {|hdr| hdr.gsub('@@@@','') }
     # Matching annotated_headers values against real_headers to ensure that

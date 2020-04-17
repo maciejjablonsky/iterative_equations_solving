@@ -66,7 +66,7 @@ most important to us (but we do all four when possible):
 
 We want to read our code. This means we like names and flow that are more
 naturally read. We try to avoid double negatives. We try to avoid cryptic
-abbreviations (sticking to ones we feel are common).
+abbreviations (sticking to vector_ones we feel are common).
 
 
 #### Descriptive

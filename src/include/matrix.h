@@ -1,55 +1,38 @@
 #ifndef MATRIX_H
 #define MATRIX_H
-#include <stddef.h>
-#include <stdbool.h>
 #include "vector.h"
 
-
-struct mat2d_shape {
-	size_t rows;
-	size_t cols;
-};
-
 struct matrix {
-    element_t * elements;
-    struct mat2d_shape shape;
+	element_t * elements;
+	len_t rows;
+	len_t cols;
 };
 
-enum matrix_storage_type {DEEP_COPY, SHALLOW_COPY};
+struct matrix * matrix__gen_band(element_t *first_row, len_t first_row_len, len_t rows, len_t cols);
 
-struct matrix_ctor_params {
-    struct mat2d_shape shape;
-    element_t * elements;
-    size_t length;
-    enum matrix_storage_type storage;
-};
-#define matrix_ctor_params(...) ((struct matrix_ctor_params){__VA_ARGS__})
+struct vector* jacobi(struct matrix * system, struct matrix *b);
 
+struct matrix *matrix__triu(struct matrix *mat, uint start_diagonal);
 
-#define POWER_OF_2(N) ((size_t)1u<<(N))
+struct matrix * matrix__tril(struct matrix * mat, uint start_diagonal);
 
-bool matrix__ctor(struct matrix * self, struct matrix_ctor_params * params);
+struct matrix *matrix__ones(len_t n);
 
-bool matrix__dctor(struct matrix * self);
+struct matrix *matrix__b(len_t n);
 
-struct matrix * matrix__new(struct matrix_ctor_params * params);
+struct matrix *__malloc_matrix(len_t elements_length);
 
-struct matrix * matrix__delete(struct matrix * self);
+struct matrix *__calloc_matrix(len_t elements_length);
 
-struct matrix * matrix__transpose(struct matrix * self);
+void matrix_zero_out_diagonal(struct matrix * mat);
 
-struct matrix * matrix__multiplication(struct matrix * A, struct matrix * B);
+void matrix_multiply_by_scalar(struct matrix * mat, element_t value);
 
-bool matrix__are_params_valid(struct matrix_ctor_params *params);
+// saves result to left matrix
+struct matrix * matrix__subtraction(struct matrix *left, struct matrix *right);
 
-bool matrix__copy_data(struct matrix *self, struct matrix_ctor_params *params);
+struct matrix * matrix__copy(struct matrix * original);
 
-element_t * matrix__direct_gauss(struct matrix * system_matrix, element_t * vectorB, size_t lenB);
-
-
-element_t *
-matrix__multiply_rows(element_t *mat_A, element_t *mat_B, size_t rows_A, size_t rows_B, size_t row_len);
-
-struct matrix *matrix__new_band(struct matrix_ctor_params *params);
+struct matrix * matrix__diagonal(struct matrix * mat);
 
 #endif // MATRIX_H

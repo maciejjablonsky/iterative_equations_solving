@@ -3,7 +3,7 @@
 ## Welcome
 
 Congratulations. You're now the proud owner of your very own pile of bits! What
-are you going to do with all these ones and zeros? This document should be able
+are you going to do with all these vector_ones and zeros? This document should be able
 to help you decide just that.
 
 Unity is a unit test framework. The goal has been to keep it small and

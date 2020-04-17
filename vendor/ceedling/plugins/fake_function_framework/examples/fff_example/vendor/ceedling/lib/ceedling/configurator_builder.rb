@@ -72,7 +72,7 @@ class ConfiguratorBuilder
 
 
   def clean(in_hash)
-    # ensure that include files inserted into test runners have file extensions & proper ones at that
+    # ensure that include files inserted into test runners have file extensions & proper vector_ones at that
     in_hash[:test_runner_includes].map!{|include| include.ext(in_hash[:extension_header])}
   end
 
