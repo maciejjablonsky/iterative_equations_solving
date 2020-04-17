@@ -141,12 +141,15 @@ struct matrix *matrix__ones(len_t n) {
 
 
 struct vector *jacobi(struct matrix *system, struct matrix *b) {
-        struct matrix * x = matrix__ones(b->rows);
+        struct matrix *x = matrix__ones(b->rows);
+        struct matrix *D = matrix__diagonal(system);
+        struct matrix *L_U = matrix__copy(system);
+        matrix__zero_out_diagonal(L_U);
 
 }
 
 
-void matrix_zero_out_diagonal(struct matrix *mat) {
+void matrix__zero_out_diagonal(struct matrix *mat) {
         for (int i = 0; i < mat->rows; ++i) {
                 mat->elements[i * (mat->cols + 1)] = 0;
         }
@@ -154,14 +157,16 @@ void matrix_zero_out_diagonal(struct matrix *mat) {
 
 
 void matrix_multiply_by_scalar(struct matrix *mat, element_t value) {
-        len_t len = mat->rows* mat->cols;
-        for (int i = 0; i < len ; ++i) {
+        len_t len = mat->rows * mat->cols;
+        for (int i = 0; i < len; ++i) {
                 mat->elements[i] *= value;
         }
 }
-struct matrix * matrix__subtraction(struct matrix *left, struct matrix *right) {
+
+struct matrix *matrix__subtraction(struct matrix *left, struct matrix *right) {
         if (left->rows != right->rows || left->cols != right->cols) {
-                LOG_ERROR("Cannot subtract matrices of different sizes. [left: %ux%u][right: %ux%u]",left->rows, left->cols, right->rows, right->cols);
+                LOG_ERROR("Cannot subtract matrices of different sizes. [left: %ux%u][right: %ux%u]", left->rows,
+                          left->cols, right->rows, right->cols);
                 return NULL;
         }
         len_t len = left->rows * left->cols;
@@ -171,27 +176,69 @@ struct matrix * matrix__subtraction(struct matrix *left, struct matrix *right) {
         return left;
 }
 
-struct matrix * matrix__copy(struct matrix * original) {
-        len_t elements_len = original->rows * original->cols;
-        struct matrix * copy = __malloc_matrix(elements_len);
+struct matrix *matrix__copy(const struct matrix *const original) {
+        struct matrix *copy = __malloc_matrix(matrix__len(original));
         if (copy == NULL)
                 return NULL;
-        memcpy(copy, original, sizeof(*copy));
-        memcpy(copy->elements, original->elements, elements_len * sizeof(*copy->elements));
+        copy->rows = original->rows;
+        copy->cols = original->cols;
+        memcpy(copy->elements, original->elements, matrix__len(original)* sizeof(*copy->elements));
         return copy;
 }
 
-struct matrix * matrix__diagonal(struct matrix * mat) {
+struct matrix *matrix__diagonal(struct matrix *mat) {
         if (mat->rows != mat->cols) {
-                LOG_ERROR("Cannot extract diagonal from not square matrix. [rows = %u][cols = %u]", mat->rows, mat->cols);
+                LOG_ERROR("Cannot extract diagonal from not square matrix. [rows = %u][cols = %u]", mat->rows,
+                          mat->cols);
                 return NULL;
         }
-        struct matrix * diagonal = __calloc_matrix(mat->rows * mat->cols);
-        if(diagonal == NULL)
+        struct matrix *diagonal = __calloc_matrix(mat->rows * mat->cols);
+        if (diagonal == NULL)
                 return NULL;
         uint limit = mat->rows * mat->cols;
         for (uint i = 0; i < limit; i += mat->cols + 1) {
                 diagonal->elements[i] = mat->elements[i];
         }
         return diagonal;
+}
+
+//struct matrix *matrix__multiply(struct matrix *A, struct matrix *B) {
+//        if (A->cols != B->rows) {
+//                LOG_ERROR("Shapes don't match for multiplication. [left: %ux%u][right: %ux%u]", A->rows, A->cols,
+//                          B->rows, B->cols);
+//                return NULL;
+//        }
+//        struct matrix *transposed_B = matrix__transpose(B);
+//        struct mat2d_shape result_shape = {A->shape.rows, B->shape.cols};
+//
+//        element_t *result_elements = matrix__multiply_rows(A->elements, transposed_B->elements, A->shape.rows,
+//                                                           transposed_B->shape.rows,
+//                                                           A->shape.cols);
+//        struct matrix_ctor_params params = matrix_ctor_params(.elements = result_elements, .shape = result_shape,
+//        .length = result_shape.rows * result_shape.cols,
+//        .storage = SHALLOW_COPY);
+//        struct matrix *result = matrix__new(&params);
+//        matrix__delete(transposed_B);
+//        return result;
+//}
+//
+struct matrix *matrix__transpose(struct matrix *mat) {
+        struct matrix *transposed = __malloc_matrix(matrix__len(mat));
+        if (transposed == NULL) {
+                return NULL;
+        }
+        len_t rows = transposed->cols = mat->rows;
+        len_t cols = transposed->rows = mat->cols;
+
+        for (int r = 0; r < rows; ++r) {
+                for (int c = 0; c < cols; ++c) {
+                        transposed->elements[r + rows * c] = mat->elements[c + cols * r];
+                }
+        }
+        return transposed;
+}
+
+
+len_t matrix__len(const struct matrix *mat) {
+        return mat->rows * mat->cols;
 }

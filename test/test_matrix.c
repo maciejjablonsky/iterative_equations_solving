@@ -1,47 +1,79 @@
 #include "unity.h"
 #include "matrix.h"
 #include "helper.h"
+#include <stdbool.h>
 
-/*#undef givenMatrix
-#define givenMatrix(mat)\
-struct matrix * (mat);\
-do {\
-        struct matrix_ctor_params params = matrix_ctor_params(.elements=(element_t[]){\
-                                                                      1, 2, 3, 4, 5,\
-                                                                      6, 7, 8, 9, 10,\
-                                                                      11, 12, 13, 14, 15\
-                                                              }, .shape = { .rows = 3, .cols=5 }, .length = 15);\
-        (mat) = matrix__new(&params);\
-        TEST_ASSERT_NOT_NULL(mat);\
-} while (0)
+void one_is_another_deep_copy(struct matrix * one, struct matrix * another) {
+        TEST_ASSERT_EQUAL(one->rows, another->rows);
+        TEST_ASSERT_EQUAL(one->cols, another->cols);
 
-#undef expectedResult
-#define expectedResult \
-{\
-        1, 6, 11,\
-        2, 7, 12,\
-        3, 8, 13,\
-        4, 9, 14,\
-        5, 10, 15\
+        len_t len = matrix__len(one);
+        len = matrix__len(another) > len ? matrix__len(another): len;
+        TEST_ASSERT_EQUAL_FLOAT_ARRAY(one->elements, another->elements, len);
+        TEST_ASSERT_NOT_EQUAL(one->elements, another->elements);
 }
 
-#undef thenTransposedIs
-#define thenTransposedIs(result) do {\
-        element_t expected[] = expectedResult;\
-        size_t num = sizeof(expected)/sizeof(*expected);\
-        TEST_ASSERT_EQUAL_MEMORY(&((struct mat2d_shape){.rows = 5, .cols=3}), &result->shape, sizeof(struct mat2d_shape));\
-        TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected, result->elements, num);\
-} while(0)
+bool one_is_another_shallow_copy(struct matrix * one, struct matrix * another) {
+        TEST_ASSERT_EQUAL(one->rows, another->rows);
+        TEST_ASSERT_EQUAL(one->cols, another->cols);
+        TEST_ASSERT_EQUAL_PTR(one->elements, another->elements);
+}
+
+#undef givenMatrix
+#define givenMatrix(mat) struct matrix * (mat) = &(struct matrix){\
+                .elements = (element_t[]){\
+                        1, 2, 3, 4,\
+                        5, 6, 7, 8,\
+                        9, 10, 11, 12\
+                }, .rows = 3, .cols = 4\
+        }
+
+#undef expectedResult
+#define expectedResult(expected) struct matrix * (expected) = &(struct matrix){\
+                .elements = (element_t[]){\
+                        1, 5, 9,\
+                        2, 6, 10, \
+                        3, 7, 11,\
+                        4, 8, 12\
+                }, .rows= 4, .cols = 3\
+        }
+
+#undef thenTransposedIsValid
+#define thenTransposedIsValid(expected, actual) do {\
+                len_t num = matrix__len(expected);\
+                TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected->elements, actual->elements, num);\
+                TEST_ASSERT_EQUAL(expected->rows, actual->rows);\
+                TEST_ASSERT_EQUAL(expected->cols, actual->cols);\
+        } while(0)
 
 void test_givenMatrix_whenTransposing_thenResultMatrixIsValid(void) {
         givenMatrix(matA);
 
         struct matrix *result = matrix__transpose(matA);
 
-        thenTransposedIs(result);
+        expectedResult(expected);
+        thenTransposedIsValid(expected, result);
 }
 
+#undef givenMatrix
+#define givenMatrix(mat) struct matrix * (mat) = &(struct matrix){\
+                .elements = (element_t[]){\
+                        1, 2, 3, 4,\
+                        5, 6, 7, 8,\
+                        9, 10, 11, 12\
+                }, .rows = 3, .cols = 4\
+        }
 
+void test_givenSourceMatrix_whenTransposing_thenSourceIsUntouched(void) {
+        givenMatrix(src);
+        struct matrix * copy_src = matrix__copy(src);
+
+        struct matrix * transposed = matrix__transpose(src);
+
+        one_is_another_deep_copy(src, copy_src);
+}
+
+/*
 #undef givenTwoMatrixLikeArrays_SecondTransposed
 #define givenTwoMatrixLikeArrays_SecondTransposed(mat_a, mat_b, rows_a, rows_b, row_len)\
 element_t (mat_a)[] = {\
@@ -128,7 +160,7 @@ do {\
 void test_givenTwoMatrices_whenMultiplyingThem_thenResultMatrixIsValid(void) {
         givenTwoMatricesForMultiplication(matA, matB);
 
-        struct matrix *result = matrix__multiplication(matA, matB);
+        struct matrix *result = matrix__multiply(matA, matB);
 
         expectedResult(expected);
         thenResultMatrixIs(expected, result);
@@ -329,7 +361,7 @@ struct matrix * (mat) = &(struct matrix){\
 void test_givenMatrix_whenZeroOutDiagonal_thenResultIs(void) {
         givenMatrix(mat);
 
-        matrix_zero_out_diagonal(mat);
+        matrix__zero_out_diagonal(mat);
         struct matrix *expected = expectedResult;
         TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected->elements, mat->elements, expected->rows * expected->cols);
 
@@ -397,8 +429,60 @@ struct matrix * (mat) = &(struct matrix){\
 void test_givenMatrix_thenDiagonalIs(void) {
         givenMatrix(mat);
 
-        struct matrix * diagonal = matrix__diagonal(mat);
+        struct matrix *diagonal = matrix__diagonal(mat);
 
-        struct matrix * expected = expectedResult;
+        struct matrix *expected = expectedResult;
         TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected->elements, diagonal->elements, expected->rows * expected->cols);
+}
+
+#undef givenMatrix
+#define givenMatrix(mat) \
+struct matrix * (mat) = &(struct matrix){\
+        .elements = (element_t[]){\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4\
+        },\
+        .rows = 4,\
+        .cols = 4\
+}
+
+void test_givenMatrixToCopy_whenDeepCopying_thenSourceMatrixIsUntouched(void) {
+        givenMatrix(src);
+        givenMatrix(src_to_test);
+        void *elements_addr = src->elements;
+
+        struct matrix *dst = matrix__copy(src);
+
+        TEST_ASSERT_EQUAL(src_to_test->rows, src->rows);
+        TEST_ASSERT_EQUAL(src_to_test->cols, src->cols);
+        TEST_ASSERT_EQUAL_PTR(elements_addr, src->elements);
+        TEST_ASSERT_EQUAL_FLOAT_ARRAY(src_to_test->elements, src->elements, matrix__len(src));
+}
+
+#undef givenMatrix
+#define givenMatrix(mat) \
+struct matrix * (mat) = &(struct matrix){\
+        .elements = (element_t[]){\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4\
+        },\
+        .rows = 4,\
+        .cols = 4\
+}
+
+void test_givenMatrixToCopy_whenDeepCopying_thenDestinationIsValidCopy(void) {
+        givenMatrix(src);
+
+        struct matrix *dst = matrix__copy(src);
+
+        TEST_ASSERT_EQUAL(src->rows, dst->rows);
+        TEST_ASSERT_EQUAL(src->cols, dst->cols);
+        TEST_ASSERT_EQUAL_FLOAT_ARRAY(src->elements, dst->elements, matrix__len(src));
+
+        // not equal pointers
+        TEST_ASSERT_NOT_EQUAL(src->elements, dst->elements);
 }
