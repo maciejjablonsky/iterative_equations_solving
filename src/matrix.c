@@ -182,7 +182,7 @@ struct matrix *matrix__copy(const struct matrix *const original) {
                 return NULL;
         copy->rows = original->rows;
         copy->cols = original->cols;
-        memcpy(copy->elements, original->elements, matrix__len(original)* sizeof(*copy->elements));
+        memcpy(copy->elements, original->elements, matrix__len(original) * sizeof(*copy->elements));
         return copy;
 }
 
@@ -211,7 +211,7 @@ struct matrix *matrix__diagonal(struct matrix *mat) {
 //        struct matrix *transposed_B = matrix__transpose(B);
 //        struct mat2d_shape result_shape = {A->shape.rows, B->shape.cols};
 //
-//        element_t *result_elements = matrix__multiply_rows(A->elements, transposed_B->elements, A->shape.rows,
+//        element_t *result_elements = matrix__multiply_one_by_second_transposed(A->elements, transposed_B->elements, A->shape.rows,
 //                                                           transposed_B->shape.rows,
 //                                                           A->shape.cols);
 //        struct matrix_ctor_params params = matrix_ctor_params(.elements = result_elements, .shape = result_shape,
@@ -241,4 +241,24 @@ struct matrix *matrix__transpose(struct matrix *mat) {
 
 len_t matrix__len(const struct matrix *mat) {
         return mat->rows * mat->cols;
+}
+
+struct matrix *
+matrix__multiply_one_by_second_transposed(struct matrix *left, struct matrix *right_transposed) {
+        size_t result_len = left->rows * right_transposed->rows;
+        struct matrix *result = __malloc_matrix(result_len);
+        if (result == NULL)
+                return NULL;
+        result->rows = left->rows;
+        result->cols = right_transposed->rows;
+        int k = 0;
+        len_t row_len = left->cols;
+        for (int i = 0; i < left->rows; ++i) {
+                for (int j = 0; j < right_transposed->rows; ++j) {
+                        result->elements[k] = vector__dot_product(left->elements + i * row_len,
+                                                                  right_transposed->elements + j * row_len, row_len);
+                        ++k;
+                }
+        }
+        return result;
 }

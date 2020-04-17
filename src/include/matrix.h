@@ -39,4 +39,7 @@ struct matrix *matrix__transpose(struct matrix *mat);
 
 len_t matrix__len(const struct matrix *mat);
 
+struct matrix *
+matrix__multiply_one_by_second_transposed(struct matrix *left, struct matrix *right_transposed);
+
 #endif // MATRIX_H

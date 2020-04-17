@@ -2,22 +2,35 @@
 #include "matrix.h"
 #include "helper.h"
 #include <stdbool.h>
+#include "vector.h"
 
-void one_is_another_deep_copy(struct matrix * one, struct matrix * another) {
+void one_is_another_deep_copy(struct matrix *one, struct matrix *another) {
         TEST_ASSERT_EQUAL(one->rows, another->rows);
         TEST_ASSERT_EQUAL(one->cols, another->cols);
 
         len_t len = matrix__len(one);
-        len = matrix__len(another) > len ? matrix__len(another): len;
+        len = matrix__len(another) > len ? matrix__len(another) : len;
         TEST_ASSERT_EQUAL_FLOAT_ARRAY(one->elements, another->elements, len);
         TEST_ASSERT_NOT_EQUAL(one->elements, another->elements);
 }
 
-bool one_is_another_shallow_copy(struct matrix * one, struct matrix * another) {
+bool one_is_another_shallow_copy(struct matrix *one, struct matrix *another) {
         TEST_ASSERT_EQUAL(one->rows, another->rows);
         TEST_ASSERT_EQUAL(one->cols, another->cols);
         TEST_ASSERT_EQUAL_PTR(one->elements, another->elements);
 }
+
+#define print_matrix(mat) \
+do {\
+        char message[128];\
+        for (int i = 0; i < (mat)->rows; ++i) {\
+                for (int j = 0; j < (mat)->cols; ++j) {\
+                        sprintf(message, "e[%dx%d] = %.3f", i, j, (mat)->elements[i * (mat)->cols + j]);\
+                        TEST_MESSAGE(message);\
+                }\
+        }\
+} while (0)
+
 
 #undef givenMatrix
 #define givenMatrix(mat) struct matrix * (mat) = &(struct matrix){\
@@ -66,53 +79,52 @@ void test_givenMatrix_whenTransposing_thenResultMatrixIsValid(void) {
 
 void test_givenSourceMatrix_whenTransposing_thenSourceIsUntouched(void) {
         givenMatrix(src);
-        struct matrix * copy_src = matrix__copy(src);
+        struct matrix *copy_src = matrix__copy(src);
 
-        struct matrix * transposed = matrix__transpose(src);
+        struct matrix *transposed = matrix__transpose(src);
 
         one_is_another_deep_copy(src, copy_src);
 }
 
-/*
-#undef givenTwoMatrixLikeArrays_SecondTransposed
-#define givenTwoMatrixLikeArrays_SecondTransposed(mat_a, mat_b, rows_a, rows_b, row_len)\
-element_t (mat_a)[] = {\
-        1, 2, 3,\
-        4, 5, 6\
-};\
-element_t (mat_b)[] = {\
-        1, 5, 9,\
-        2, 6, 10,\
-        3, 7, 11,\
-        4, 8, 12,\
-};\
-size_t (rows_a) = 2;\
-size_t (rows_b) = 4;\
-size_t (row_len) = 3;
+
+#undef givenLeftMatrixAndTransposedRightMatrix
+#define givenLeftMatrixAndTransposedRightMatrix(left, right) struct matrix *(left) = &(struct matrix) {\
+                .elements = (element_t[]) {\
+                        1, 2, 3,\
+                        4, 5, 6\
+                }, .rows=2, .cols=3\
+        };\
+        struct matrix *(right) = &(struct matrix) {\
+                .elements = (element_t[]) {\
+                        1, 5, 9,\
+                        2, 6, 10,\
+                        3, 7, 11,\
+                        4, 8, 12,\
+                }, .rows = 4, .cols = 3\
+        };
 
 #undef expectedResult
-#define expectedResult \
-{\
-  38, 44, 50, 56,\
-  83, 98, 113, 128\
-};
+#define expectedResult(expected) struct matrix * (expected) = &(struct matrix){\
+                .elements=(element_t[]){\
+                        38, 44, 50, 56,\
+                        83, 98, 113, 128\
+                }, .rows = 2, .cols = 4\
+        }
 
-#undef thenResultArrayIsValid
-#define thenResultArrayIsValid(expected, actual) do {\
-        size_t len = sizeof(expected)/sizeof(*(expected));\
-        TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected, actual, len);\
-} while (0)
+#define thenResultMatrixIs(expected, actual) do {\
+                one_is_another_deep_copy(expected, actual);\
+        } while(0)
 
-void test_givenTwoMatrixLikeArray_whenScalarMultiplyingByRowsWithOrder_thenResultArrayIsValid(void) {
-        givenTwoMatrixLikeArrays_SecondTransposed(matA, matB, rowsA, rowsB, row_len);
 
-        element_t *result = matrix__multiply_rows(matA, matB, rowsA, rowsB, row_len);
+void test_givenTwoMatricesWhileSecondIsTransposed_whenScalarMultiplyingByRows_thenResultArrayIsValid(void) {
+        givenLeftMatrixAndTransposedRightMatrix(left, right_transposed);
 
-        element_t expected[] = expectedResult;
-        thenResultArrayIsValid(expected, result);
+        struct matrix *result = matrix__multiply_one_by_second_transposed(left, right_transposed);
+        expectedResult(expected);
+        thenResultMatrixIs(expected, result);
 }
 
-
+/*
 #undef givenTwoMatricesForMultiplication
 #define givenTwoMatricesForMultiplication(mat_a, mat_b)\
 struct matrix * (mat_a);\
