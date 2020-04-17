@@ -135,3 +135,34 @@ void test_givenTwoMatrices_whenMultiplyingThem_thenResultMatrixIsValid(void) {
         thenResultMatrixIs(expected, result);
 }
 
+
+#undef givenBandMatrix
+#define givenBandMatrix(bandA)\
+struct matrix * (bandA) = matrix__new_band(&matrix_ctor_params(\
+        .elements=(element_t[]){1,2,3},\
+        .shape={5,5},\
+        .length= 3\
+));
+
+#undef thenResultBandMatrixIs
+#define thenResultBandMatrixIs(expected, actual) do {\
+        len_t num = sizeof(expected)/sizeof(*expected);\
+        TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected, actual, num);\
+} while(0)
+
+#undef expectedResult
+#define expectedResult \
+{\
+        1,2,3,0,0,\
+        2,1,2,3,0,\
+        3,2,1,2,3,\
+        0,3,2,1,2,\
+        0,0,3,2,1\
+}
+
+void test_bandMatrixPatternValidity(void) {
+        givenBandMatrix(bandA);
+
+        element_t expected[] = expectedResult;
+        thenResultBandMatrixIs(expected, bandA->elements);
+}

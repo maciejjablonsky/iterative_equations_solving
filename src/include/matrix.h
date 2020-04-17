@@ -44,9 +44,12 @@ bool matrix__are_params_valid(struct matrix_ctor_params *params);
 
 bool matrix__copy_data(struct matrix *self, struct matrix_ctor_params *params);
 
+element_t * matrix__direct_gauss(struct matrix * system_matrix, element_t * vectorB, size_t lenB);
+
 
 element_t *
 matrix__multiply_rows(element_t *mat_A, element_t *mat_B, size_t rows_A, size_t rows_B, size_t row_len);
 
+struct matrix *matrix__new_band(struct matrix_ctor_params *params);
 
 #endif // MATRIX_H

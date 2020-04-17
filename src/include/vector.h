@@ -4,7 +4,8 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-
+typedef unsigned int len_t;
+typedef unsigned int uint;
 typedef float element_t;
 
 element_t vector__dot_product(const element_t *vecA, const element_t *vecB, size_t len);

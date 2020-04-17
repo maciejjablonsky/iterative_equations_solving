@@ -129,5 +129,54 @@ bool matrix__copy_data(struct matrix *self, struct matrix_ctor_params *params) {
         return true;
 }
 
+struct matrix *matrix__new_band(struct matrix_ctor_params *params) {
+        len_t rows = params->shape.rows;
+        len_t cols = params->shape.cols;
+        element_t *elements = calloc(rows * cols, sizeof(*elements));
 
+        element_t *src_vector = params->elements;
+        for (size_t i = 0,
+                     length = rows - params->length + 1,
+                     vector_size = params->length * sizeof(*elements); i < length; ++i) {
+                memcpy(elements + i * (rows + 1), src_vector, vector_size);
+        }
+
+        for (size_t i = 0,
+                     offset = (rows + 1) * (rows - params->length + 1),
+                     row_step = rows + 1,
+                     size = sizeof(*elements),
+                     elements_length = params->length - 1,
+                     steps = params->length - 1;
+             i < steps; ++i) {
+                memcpy(elements + offset + row_step * i, src_vector, (elements_length - i) * size);
+        }
+
+        element_t *reversed_elements = calloc(params->length - 1, sizeof(*reversed_elements));
+        for (size_t i = 0,
+                     elements_length = params->length - 1;
+             i < elements_length; ++i) {
+                reversed_elements[i] = src_vector[params->length - i - 1];
+        }
+        for (size_t offset = (params->length - 1) * rows,
+                     steps = rows - params->length + 1,
+                     vector_size = (params->length - 1) * sizeof(*reversed_elements),
+                     i = 0; i < steps; ++i) {
+                memcpy(elements + offset + (rows + 1) * i, reversed_elements, vector_size);
+        }
+        for (size_t elements_length = params->length - 1,
+                     offset = (elements_length - 1) * rows,
+                     i = 0,
+                     steps = elements_length - 1,
+                     size = sizeof(element_t);
+             i < steps; ++i) {
+                memcpy(elements + offset - rows * i, reversed_elements + i + 1, (elements_length - i - 1) * size);
+        }
+        free(reversed_elements);
+        return matrix__new(&matrix_ctor_params(
+                .storage=SHALLOW_COPY,
+                .elements = elements,
+                .shape={ rows, cols },
+                .length= rows*cols
+        ));
+}
 
