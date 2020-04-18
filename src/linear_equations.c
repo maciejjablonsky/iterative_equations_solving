@@ -48,7 +48,7 @@ struct matrix *lin_eq_sys__jacobi(struct matrix *A, struct matrix *b, int *itera
                 matrix__delete(x);
                 matrix__multiply_by_scalar(x_next, -1);
                 matrix__add(x_next, b);
-                x = lin_eq_sys__forward_substitution(D, x_next);
+                x = lin_eq_sys__forward_substitution_when_left_diagonal(D, x_next);
                 matrix__delete(x_next);
 //                print_matrix_to_file(x, "x.txt");
                 iter++;
@@ -66,7 +66,19 @@ bool lin_eq_sys__is_solution_close_enough(struct matrix *A, struct matrix *x, st
                 .elements = residuum->elements, .len = residuum->rows)
                         );
 //        print_matrix_to_file(residuum, "residuum.txt");
-//        printf("norm: %Lg\r", norm);
+        printf("norm: %Lg\r", norm);
         matrix__delete(residuum);
-        return norm > SOLUTION_EPSILON;
+        return norm > SOLUTION_EPSILON || __isnanl(norm) || __isinf(norm);
+}
+
+struct matrix * lin_eq_sys__forward_substitution_when_left_diagonal(struct matrix *L, struct matrix *b) {
+        struct matrix *result = __calloc_matrix(matrix__len(b));
+        if (result == NULL)
+                return NULL;
+        result->cols = 1;
+        result->rows = b->rows;
+        for (int i = 0; i < b->rows; ++i) {
+                result->elements[i] = b->elements[i] / L->elements[i * (L->cols + 1)];
+        }
+        return result;
 }

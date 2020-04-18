@@ -20,8 +20,9 @@ for k=1:m-1
 end
 
 Y = L\b;
+tic
 X = U\Y;
-
+toc
 X
 
 
