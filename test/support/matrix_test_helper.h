@@ -22,7 +22,7 @@ do {\
         char message[128];\
         for (int i = 0; i < (mat)->rows; ++i) {\
                 for (int j = 0; j < (mat)->cols; ++j) {\
-                        sprintf(message, "e[%dx%d] = %.3le", i, j, (mat)->elements[i * (mat)->cols + j]);\
+                        sprintf(message, "e[%dx%d] = %.3Lg", i, j, (mat)->elements[i * (mat)->cols + j]);\
                         TEST_MESSAGE(message);\
                 }\
         }\

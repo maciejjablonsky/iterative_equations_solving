@@ -4,43 +4,24 @@
 #include <time.h>
 #include "linear_equations.h"
 
-#define givenSystemOfEquations(A, solutions, b) \
-                struct matrix *(A) = &(struct matrix) {\
-                        .elements = (element_t[]) {\
-                                2, 3, 5,\
-                                6, 4, 2,\
-                                5, -2, 1\
-                        }, .rows=3, .cols=3\
-                };\
-                struct matrix *(solutions) = &(struct matrix) {\
-                        .elements = (element_t[]) {\
-                                0.5,\
-                                -0.5,\
-                                0.5\
-                        }, .rows=3, .cols=1\
-                };\
-                struct matrix *(b) = &(struct matrix) {\
-                        .elements = (element_t[]) {\
-                                2,\
-                                2,\
-                                4\
-                        }, .rows = 3, .cols = 1\
-                };
-
-#undef expectedResult
-#define expectedResult(expected) struct matrix * (expected) = &(struct matrix){\
-                .elements=(element_t[]){\
-                        0,\
-                        0,\
-                        0}, .rows = 3, .cols = 1\
-        }
 
 int main() {
-        givenSystemOfEquations(A, x, b);
-        struct matrix * res = lin_eq_sys__residuum(A, x, b);
-        for (int i = 0; i < res->rows; ++i) {
-                printf("%Lg ", res->elements[i]);
-        }
+        len_t n = 1000;
+        struct matrix *A = matrix__gen_band((element_t[]){12, -1, -1}, 3, n, n);
+        struct matrix *b = matrix__b(n);
+        print_matrix_to_file(b, "b.txt");
+        int i = 0;
+        clock_t start = clock();
+        time_t start_time = time(NULL);
+        struct matrix * res = lin_eq_sys__jacobi(A, b, &i);
+        clock_t end = clock();
+        time_t end_time = time(NULL);
+        print_matrix_to_file(res, "result.txt");
+        printf("iterations: %d\n", i);
+        printf("proc time: %lf [s]\n", (double)(end - start)/CLOCKS_PER_SEC);
+        printf("real time: %lf [s]\n", (double)(end_time - start_time)* 0.001);
         putchar('\n');
-        lin_eq_sys__jacobi(A, b);
+        matrix__delete(A);
+        matrix__delete(b);
+        matrix__delete(res);
 }

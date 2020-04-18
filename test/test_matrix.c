@@ -302,8 +302,7 @@ void test_givenMatrix_whenZeroOutDiagonal_thenResultIs(void) {
 
         matrix__zero_out_diagonal(mat);
         struct matrix *expected = expectedResult;
-        TEST_ASSERT_EQUAL_DOUBLE_ARRAY(expected->elements, mat->elements, expected->rows * expected->cols);
-
+        one_is_another_deep_copy(expected, mat);
 }
 
 
@@ -334,7 +333,7 @@ struct matrix * (mat) = &(struct matrix){\
 void test_givenMatrix_whenMultipliedBy2_thenResultIs(void) {
         givenMatrix(mat);
 
-        matrix_multiply_by_scalar(mat, 2);
+        matrix__multiply_by_scalar(mat, 2);
 
         struct matrix *expected = expectedResult;
         TEST_ASSERT_EQUAL_DOUBLE_ARRAY(expected->elements, mat->elements,
@@ -371,7 +370,7 @@ void test_givenMatrix_thenDiagonalIs(void) {
         struct matrix *diagonal = matrix__diagonal(mat);
 
         struct matrix *expected = expectedResult;
-        TEST_ASSERT_EQUAL_DOUBLE_ARRAY(expected->elements, diagonal->elements, expected->rows * expected->cols);
+        one_is_another_deep_copy(expected,diagonal);
 }
 
 #undef givenMatrix
@@ -458,7 +457,40 @@ void test_givenMatrixToCopy_whenDeepCopying_thenDestinationIsValidCopy(void) {
 void test_givenTwoMatrices_whenSubtracting_thenResultIsStoredInFirstOne(void) {
         givenTwoMatrices(matA, matB);
 
-        struct matrix *result = matrix__subtraction(matA, matB);
+        struct matrix *result = matrix__sub(matA, matB);
+
+        expectedResult(expected);
+        thenResultIsStoredInFirstOne(expected, result, matA);
+}
+
+#undef givenTwoMatrices
+#define givenTwoMatrices(mat_a, mat_b) \
+                struct matrix *(mat_b) = &(struct matrix) {\
+                        .elements = (element_t[]) {\
+                                2, 2, 2,\
+                                2, 2, 2,\
+                        }, .rows = 2, .cols = 3\
+                };\
+                struct matrix *(mat_a) = &(struct matrix) {\
+                        .elements = (element_t[]) {\
+                                4, 3, 2,\
+                                6, 5, 4\
+                        }, .rows = 2, .cols = 3\
+                };
+
+#undef expectedResult
+#define expectedResult(expected) struct matrix * (expected) = &(struct matrix){\
+                .elements = (element_t[]){\
+                        6, 5, 4,\
+                        8, 7, 6\
+                }, .rows = 2, .cols = 3\
+        }
+
+
+void test_givenTwoMatrices_whenAdding_thenResultIsStoredInFirstOne(void) {
+        givenTwoMatrices(matA, matB);
+
+        struct matrix *result = matrix__add(matA, matB);
 
         expectedResult(expected);
         thenResultIsStoredInFirstOne(expected, result, matA);

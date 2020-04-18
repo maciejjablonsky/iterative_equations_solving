@@ -122,7 +122,7 @@ struct matrix *matrix__b(len_t n) {
         b->cols = 1;
 
         for (int i = 0; i < n; ++i) {
-                b->elements[i] = sin(to_radians(i * (MAGIC_f + 1)));
+                b->elements[i] = sin(i * (MAGIC_f + 1));
         }
         return b;
 }
@@ -139,10 +139,6 @@ struct matrix *matrix__ones(len_t n) {
         return mat;
 }
 
-
-
-
-
 void matrix__zero_out_diagonal(struct matrix *mat) {
         for (int i = 0; i < mat->rows; ++i) {
                 mat->elements[i * (mat->cols + 1)] = 0;
@@ -150,14 +146,14 @@ void matrix__zero_out_diagonal(struct matrix *mat) {
 }
 
 
-void matrix_multiply_by_scalar(struct matrix *mat, element_t value) {
+void matrix__multiply_by_scalar(struct matrix *mat, element_t value) {
         len_t len = matrix__len(mat);
         for (int i = 0; i < len; ++i) {
                 mat->elements[i] *= value;
         }
 }
 
-struct matrix *matrix__subtraction(struct matrix *left, struct matrix *right) {
+struct matrix *matrix__sub(struct matrix *left, struct matrix *right) {
         if (left->rows != right->rows || left->cols != right->cols) {
                 LOG_ERROR("Cannot subtract matrices of different sizes. [left: %ux%u][right: %ux%u]", left->rows,
                           left->cols, right->rows, right->cols);
@@ -166,6 +162,19 @@ struct matrix *matrix__subtraction(struct matrix *left, struct matrix *right) {
         len_t len = matrix__len(left);
         for (int i = 0; i < len; ++i) {
                 left->elements[i] -= right->elements[i];
+        }
+        return left;
+}
+
+struct matrix * matrix__add(struct matrix * left, struct matrix *right) {
+        if (left->rows != right->rows || left->cols != right->cols) {
+                LOG_ERROR("Cannot subtract matrices of different sizes. [left: %ux%u][right: %ux%u]", left->rows,
+                          left->cols, right->rows, right->cols);
+                return NULL;
+        }
+        len_t len = matrix__len(left);
+        for (int i = 0; i < len; ++i) {
+                left->elements[i] += right->elements[i];
         }
         return left;
 }
@@ -189,6 +198,8 @@ struct matrix *matrix__diagonal(struct matrix *mat) {
         struct matrix *diagonal = __calloc_matrix(mat->rows * mat->cols);
         if (diagonal == NULL)
                 return NULL;
+        diagonal->rows = mat->rows;
+        diagonal->cols = mat->cols;
         uint limit = matrix__len(mat);
         for (uint i = 0; i < limit; i += mat->cols + 1) {
                 diagonal->elements[i] = mat->elements[i];
@@ -255,6 +266,18 @@ struct matrix * matrix__delete(struct matrix * mat) {
         free(mat->elements);
         free(mat);
         return NULL;
+}
+
+void print_matrix_to_file(struct matrix *mat, const char *filename) {
+        FILE * file = fopen(filename, "a");
+        for (int i = 0; i < mat->rows; ++i) {
+                for (int j = 0; j < mat->cols; ++j) {
+                        fprintf(file, "%8.4Lg\t", mat->elements[i*mat->cols + j]);
+                }
+                fputc('\n', file);
+        }
+        fprintf(file, "\n\n");
+        fclose(file);
 }
 
 

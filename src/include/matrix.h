@@ -27,10 +27,10 @@ struct matrix *__calloc_matrix(len_t elements_length);
 
 void matrix__zero_out_diagonal(struct matrix *mat);
 
-void matrix_multiply_by_scalar(struct matrix *mat, element_t value);
+void matrix__multiply_by_scalar(struct matrix *mat, element_t value);
 
 // saves result to left matrix
-struct matrix *matrix__subtraction(struct matrix *left, struct matrix *right);
+struct matrix *matrix__sub(struct matrix *left, struct matrix *right);
 
 struct matrix *matrix__multiply(struct matrix *A, struct matrix *B);
 
@@ -46,5 +46,9 @@ struct matrix *
 matrix__multiply_one_by_second_transposed(struct matrix *left, struct matrix *right_transposed);
 
 struct matrix *matrix__delete(struct matrix *mat);
+
+struct matrix * matrix__add(struct matrix * left, struct matrix *right);
+
+void print_matrix_to_file(struct matrix *mat, const char *filename);
 
 #endif // MATRIX_H

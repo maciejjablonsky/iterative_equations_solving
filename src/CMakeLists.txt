@@ -6,7 +6,5 @@ include_directories(include)
 include_directories(internals)
 
 set(SOURCE_FILES matrix.c main.c vector.c helper.c linear_equations.c)
-add_executable(isolve ${SOURCE_FILES})
-target_link_libraries(isolve pthread)
 add_executable(time ${SOURCE_FILES})
 target_link_libraries(time m)
