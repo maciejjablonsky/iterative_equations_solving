@@ -7,8 +7,13 @@ include_directories(../src/include)
 include_directories(../vendor/plugins)
 include_directories(../build/test/mocks)
 include_directories(../vendor/ceedling/plugins/fake_function_framework/src)
+include_directories(support)
 set(TESTS_SOURCE test_matrix.c
-        test_vector.c)
+        test_vector.c
+        test_linear_equations.c
+        support/unity_config.h)
+
+
 
 #set(C_FLAGS "-Wall -Werror --std=c99 -O")
 set(CMAKE_C_FLAGS "${C_FLAGS}")

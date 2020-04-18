@@ -29,7 +29,7 @@ static inline long double square(long double val) {
         return val * val;
 }
 
-long double vector_norm(struct vector *vec) {
+long double vector__norm(struct vector *vec) {
         long double norm = 0;
         for (int i = 0; i < vec->len; ++i) {
                 norm += square(vec->elements[i]);

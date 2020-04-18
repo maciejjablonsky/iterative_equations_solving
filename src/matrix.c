@@ -83,7 +83,7 @@ struct matrix *matrix__gen_band(element_t *first_row, len_t first_row_len, len_t
 }
 
 struct matrix *matrix__triu(struct matrix *mat, uint start_diagonal) {
-        struct matrix *U = __calloc_matrix(mat->rows * mat->cols);
+        struct matrix *U = __calloc_matrix(matrix__len(mat));
         if (U == NULL)
                 return NULL;
         U->rows = mat->rows;
@@ -99,7 +99,7 @@ struct matrix *matrix__triu(struct matrix *mat, uint start_diagonal) {
 }
 
 struct matrix *matrix__tril(struct matrix *mat, uint start_diagonal) {
-        struct matrix *L = __calloc_matrix(mat->rows * mat->cols);
+        struct matrix *L = __calloc_matrix(matrix__len(mat));
         if (L == NULL)
                 return NULL;
         L->rows = mat->rows;
@@ -140,13 +140,7 @@ struct matrix *matrix__ones(len_t n) {
 }
 
 
-struct vector *jacobi(struct matrix *system, struct matrix *b) {
-        struct matrix *x = matrix__ones(b->rows);
-        struct matrix *D = matrix__diagonal(system);
-        struct matrix *L_U = matrix__copy(system);
-        matrix__zero_out_diagonal(L_U);
 
-}
 
 
 void matrix__zero_out_diagonal(struct matrix *mat) {
@@ -157,7 +151,7 @@ void matrix__zero_out_diagonal(struct matrix *mat) {
 
 
 void matrix_multiply_by_scalar(struct matrix *mat, element_t value) {
-        len_t len = mat->rows * mat->cols;
+        len_t len = matrix__len(mat);
         for (int i = 0; i < len; ++i) {
                 mat->elements[i] *= value;
         }
@@ -169,7 +163,7 @@ struct matrix *matrix__subtraction(struct matrix *left, struct matrix *right) {
                           left->cols, right->rows, right->cols);
                 return NULL;
         }
-        len_t len = left->rows * left->cols;
+        len_t len = matrix__len(left);
         for (int i = 0; i < len; ++i) {
                 left->elements[i] -= right->elements[i];
         }
@@ -195,33 +189,27 @@ struct matrix *matrix__diagonal(struct matrix *mat) {
         struct matrix *diagonal = __calloc_matrix(mat->rows * mat->cols);
         if (diagonal == NULL)
                 return NULL;
-        uint limit = mat->rows * mat->cols;
+        uint limit = matrix__len(mat);
         for (uint i = 0; i < limit; i += mat->cols + 1) {
                 diagonal->elements[i] = mat->elements[i];
         }
         return diagonal;
 }
 
-//struct matrix *matrix__multiply(struct matrix *A, struct matrix *B) {
-//        if (A->cols != B->rows) {
-//                LOG_ERROR("Shapes don't match for multiplication. [left: %ux%u][right: %ux%u]", A->rows, A->cols,
-//                          B->rows, B->cols);
-//                return NULL;
-//        }
-//        struct matrix *transposed_B = matrix__transpose(B);
-//        struct mat2d_shape result_shape = {A->shape.rows, B->shape.cols};
-//
-//        element_t *result_elements = matrix__multiply_one_by_second_transposed(A->elements, transposed_B->elements, A->shape.rows,
-//                                                           transposed_B->shape.rows,
-//                                                           A->shape.cols);
-//        struct matrix_ctor_params params = matrix_ctor_params(.elements = result_elements, .shape = result_shape,
-//        .length = result_shape.rows * result_shape.cols,
-//        .storage = SHALLOW_COPY);
-//        struct matrix *result = matrix__new(&params);
-//        matrix__delete(transposed_B);
-//        return result;
-//}
-//
+struct matrix *matrix__multiply(struct matrix *A, struct matrix *B) {
+        if (A->cols != B->rows) {
+                LOG_ERROR("Shapes don't match for multiplication. [left: %ux%u][right: %ux%u]", A->rows, A->cols,
+                          B->rows, B->cols);
+                return NULL;
+        }
+        struct matrix *transposed_B = matrix__transpose(B);
+
+
+        struct matrix * result = matrix__multiply_one_by_second_transposed(A, transposed_B);
+        matrix__delete(transposed_B);
+        return result;
+}
+
 struct matrix *matrix__transpose(struct matrix *mat) {
         struct matrix *transposed = __malloc_matrix(matrix__len(mat));
         if (transposed == NULL) {
@@ -262,3 +250,11 @@ matrix__multiply_one_by_second_transposed(struct matrix *left, struct matrix *ri
         }
         return result;
 }
+
+struct matrix * matrix__delete(struct matrix * mat) {
+        free(mat->elements);
+        free(mat);
+        return NULL;
+}
+
+

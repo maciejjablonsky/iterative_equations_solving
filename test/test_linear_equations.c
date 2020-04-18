@@ -1,9 +1,11 @@
-#include <stdio.h>
-#include "matrix.h"
-#include <stdlib.h>
-#include <time.h>
+#include "unity.h"
 #include "linear_equations.h"
+#include "matrix.h"
+#include "vector.h"
+#include "helper.h"
+#include "matrix_test_helper.h"
 
+#undef givenSystemOfEquations
 #define givenSystemOfEquations(A, solutions, b) \
                 struct matrix *(A) = &(struct matrix) {\
                         .elements = (element_t[]) {\
@@ -35,12 +37,14 @@
                         0}, .rows = 3, .cols = 1\
         }
 
-int main() {
+#define thenResultIsValid(expected, actual) do {\
+                one_is_another_deep_copy(expected, actual);\
+        } while(0)
+
+void test_givenSystemOfEquations_whenCountedResiduum_thenResultIsValid(void) {
         givenSystemOfEquations(A, x, b);
-        struct matrix * res = lin_eq_sys__residuum(A, x, b);
-        for (int i = 0; i < res->rows; ++i) {
-                printf("%Lg ", res->elements[i]);
-        }
-        putchar('\n');
-        lin_eq_sys__jacobi(A, b);
+
+        struct matrix * residuum = lin_eq_sys__residuum(A, x, b);
+        expectedResult(expected);
+        thenResultIsValid(expected, residuum);
 }

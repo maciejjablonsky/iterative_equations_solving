@@ -9,7 +9,7 @@ size_t (len) = 5;
 
 #undef thenScalarProductIs
 #define thenScalarProductIs(expected, actual) do {\
-        TEST_ASSERT_EQUAL_FLOAT(expected, actual);\
+        TEST_ASSERT_EQUAL_DOUBLE(expected, actual);\
 } while(0)
 
 void test_givenTwoVectorsOfSameLength_whenDotProduct_thenResultIsValidDotProduct(void) {
@@ -22,13 +22,13 @@ void test_givenTwoVectorsOfSameLength_whenDotProduct_thenResultIsValidDotProduct
 
 #undef givenTwoVectorsOfSameLength
 #define givenTwoVectorsOfSameLength(vecA, vecB, len) \
-element_t (vecA)[] = {54123,21245,3124,456542,52554};\
+element_t (vecA)[] = {54123,21245,3124,456542,52552};\
 element_t (vecB)[] = {24325,33243,2435,55353,43452};\
 size_t (len) = 5;
 
 #undef thenScalarProductIs
 #define thenScalarProductIs(expected, actual) do {\
-        TEST_ASSERT_EQUAL_FLOAT(expected, actual);\
+        TEST_ASSERT_EQUAL_DOUBLE(expected, actual);\
 } while(0)
 
 void test_givenTwoVectorsOfSameLengthWithBigValues_whenDotProduct_thenResultIsValidDotProduct(void) {
@@ -36,7 +36,7 @@ void test_givenTwoVectorsOfSameLengthWithBigValues_whenDotProduct_thenResultIsVa
 
         element_t dot_product = vector__dot_product(vecA, vecB, length);
 
-        thenScalarProductIs(2.95849422e10, dot_product);
+        thenScalarProductIs(29584855280, dot_product);
 }
 
 
@@ -54,7 +54,7 @@ size_t (vec_len) = 5;
 #undef thenResultVectorIs
 #define thenResultVectorIs(expected, actual) do {\
         size_t num = sizeof(expected) / sizeof(*(expected));\
-        TEST_ASSERT_EQUAL_FLOAT_ARRAY(expected, actual, num);\
+        TEST_ASSERT_EQUAL_DOUBLE_ARRAY(expected, actual, num);\
 } while(0)
 
 void test_givenTwoArraysOfVectors_whenScalarMultiplyingCorrespondingVectors_thenResultVectorIs(void) {
@@ -77,6 +77,6 @@ void test_givenTwoArraysOfVectors_whenScalarMultiplyingCorrespondingVectors_then
 void test_vectorNorm(void) {
         givenVector(vec);
 
-        long double norm = vector_norm(vec);
-        TEST_ASSERT_EQUAL_FLOAT(18.788294228055936, norm);
+        long double norm = vector__norm(vec);
+        TEST_ASSERT_EQUAL_DOUBLE(18.788294228055936, norm);
 }
