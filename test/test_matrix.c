@@ -52,11 +52,11 @@ void test_givenMatrix_whenTransposing_thenResultMatrixIsValid(void) {
 
 void test_givenSourceMatrix_whenTransposing_thenSourceIsUntouched(void) {
         givenMatrix(src);
-        struct matrix *copy_src = matrix__copy(src);
+        struct matrix *copy_src = matrix__deep_copy(src);
 
         struct matrix *transposed = matrix__transpose(src);
 
-        one_is_another_deep_copy(src, copy_src);
+        ASSERT_MATRIX_DEEP_COPY(src, copy_src);
 }
 
 
@@ -85,7 +85,7 @@ void test_givenSourceMatrix_whenTransposing_thenSourceIsUntouched(void) {
         }
 
 #define thenResultMatrixIs(expected, actual) do {\
-                one_is_another_deep_copy(expected, actual);\
+                ASSERT_MATRIX_DEEP_COPY(expected, actual);\
         } while(0)
 
 
@@ -122,7 +122,7 @@ void test_bandMatrixPatternValidity(void) {
 
 #undef givenMatrix
 #define givenMatrix(mat) \
-struct matrix (mat) = {\
+struct matrix *(mat) = &(struct matrix){\
         .elements = (element_t[]){\
                 1, 2, 3, 4,\
                 1, 2, 3, 4,\
@@ -134,7 +134,7 @@ struct matrix (mat) = {\
 }
 
 #undef expectedResult
-#define expectedResult (struct matrix) {\
+#define expectedResult &(struct matrix) {\
                 .elements = (element_t[]){\
                         1, 2, 3, 4,\
                         0, 2, 3, 4,\
@@ -144,19 +144,17 @@ struct matrix (mat) = {\
                 .rows = 4, .cols = 4\
         }
 
-void test_triuWithDiagonal(void) {
-        givenMatrix(mat);
+void test_givenSourceMatrix_whenCalledTriu_thenSourceMatrixStoresResult(void) {
+        givenMatrix(src);
 
-        struct matrix *result = matrix__triu(&mat, 0);
+        struct matrix *actual = matrix__triu(src, 0);
 
-        struct matrix expected = expectedResult;
-
-        TEST_ASSERT_EQUAL_DOUBLE_ARRAY(expected.elements, result->elements, expected.rows * expected.cols);
+        ASSERT_MATRIX_SHALLOW_COPY(src, actual);
 }
 
 #undef givenMatrix
 #define givenMatrix(mat) \
-struct matrix (mat) = {\
+struct matrix *(mat) = &(struct matrix){\
         .elements = (element_t[]){\
                 1, 2, 3, 4,\
                 1, 2, 3, 4,\
@@ -168,7 +166,39 @@ struct matrix (mat) = {\
 }
 
 #undef expectedResult
-#define expectedResult (struct matrix) {\
+#define expectedResult &(struct matrix) {\
+                .elements = (element_t[]){\
+                        1, 2, 3, 4,\
+                        0, 2, 3, 4,\
+                        0, 0, 3, 4,\
+                        0, 0, 0, 4\
+                },\
+                .rows = 4, .cols = 4\
+        }
+
+void test_givenSourceMatrix_whenCalledTriu_thenResultIsValid(void) {
+        givenMatrix(mat);
+
+        struct matrix * actual = matrix__triu(mat, 0);
+
+        ASSERT_MATRIX_DEEP_COPY(expectedResult, actual);
+}
+
+#undef givenMatrix
+#define givenMatrix(mat) \
+struct matrix * (mat) = &(struct matrix){\
+        .elements = (element_t[]){\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4\
+        },\
+        .rows = 4,\
+        .cols = 4\
+}
+
+#undef expectedResult
+#define expectedResult &(struct matrix) {\
                 .elements = (element_t[]){\
                         0, 2, 3, 4,\
                         0, 0, 3, 4,\
@@ -181,17 +211,15 @@ struct matrix (mat) = {\
 void test_triuRowAboveDiagonal(void) {
         givenMatrix(mat);
 
-        struct matrix *result = matrix__triu(&mat, 1);
+        struct matrix *result = matrix__triu(mat, 1);
 
-        struct matrix expected = expectedResult;
-
-        TEST_ASSERT_EQUAL_DOUBLE_ARRAY(expected.elements, result->elements, expected.rows * expected.cols);
-
+        struct matrix * expected = expectedResult;
+        ASSERT_MATRIX_DEEP_COPY(expected, result);
 }
 
 #undef givenMatrix
 #define givenMatrix(mat) \
-struct matrix (mat) = {\
+struct matrix * (mat) = &(struct matrix){\
         .elements = (element_t[]){\
                 1, 2, 3, 4,\
                 1, 2, 3, 4,\
@@ -203,7 +231,7 @@ struct matrix (mat) = {\
 }
 
 #undef expectedResult
-#define expectedResult (struct matrix) {\
+#define expectedResult &(struct matrix) {\
                 .elements = (element_t[]){\
                         1, 0, 0, 0,\
                         1, 2, 0, 0,\
@@ -213,19 +241,19 @@ struct matrix (mat) = {\
                 .rows = 4, .cols = 4\
         }
 
-void test_trilWithDiagonal(void) {
+void test_givenSourceMatrix_whenCalledTril_thenResultIsValid(void) {
         givenMatrix(mat);
 
-        struct matrix *result = matrix__tril(&mat, 0);
+        struct matrix *result = matrix__tril(mat, 0);
 
-        struct matrix expected = expectedResult;
-        TEST_ASSERT_EQUAL_DOUBLE_ARRAY(expected.elements, result->elements, expected.rows * expected.cols);
+        struct matrix * expected = expectedResult;
+        ASSERT_MATRIX_DEEP_COPY(expected, result);
 }
 
 
 #undef givenMatrix
 #define givenMatrix(mat) \
-struct matrix (mat) = {\
+struct matrix * (mat) = &(struct matrix){\
         .elements = (element_t[]){\
                 1, 2, 3, 4,\
                 1, 2, 3, 4,\
@@ -237,7 +265,7 @@ struct matrix (mat) = {\
 }
 
 #undef expectedResult
-#define expectedResult (struct matrix) {\
+#define expectedResult &(struct matrix) {\
                 .elements = (element_t[]){\
                         0, 0, 0, 0,\
                         1, 0, 0, 0,\
@@ -247,13 +275,46 @@ struct matrix (mat) = {\
                 .rows = 4, .cols = 4\
         }
 
-void test_trilWithOneRowBelowDiagonal(void) {
+void test_givenSourceMatrix_whenTrilCalledWithOne_thenResultIsValid(void) {
         givenMatrix(mat);
 
-        struct matrix *result = matrix__tril(&mat, 1);
+        struct matrix *result = matrix__tril(mat, 1);
 
-        struct matrix expected = expectedResult;
-        TEST_ASSERT_EQUAL_DOUBLE_ARRAY(expected.elements, result->elements, expected.rows * expected.cols);
+        struct matrix * expected = expectedResult;
+        ASSERT_MATRIX_DEEP_COPY(expected, mat);
+}
+
+#undef givenMatrix
+#define givenMatrix(mat) \
+struct matrix * (mat) = &(struct matrix){\
+        .elements = (element_t[]){\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4,\
+                1, 2, 3, 4\
+        },\
+        .rows = 4,\
+        .cols = 4\
+}
+
+#undef expectedResult
+#define expectedResult &(struct matrix) {\
+                .elements = (element_t[]){\
+                        1, 0, 0, 0,\
+                        1, 2, 0, 0,\
+                        1, 2, 3, 0,\
+                        1, 2, 3, 4\
+                },\
+                .rows = 4, .cols = 4\
+        }
+
+void test_givenSourceMatrix_whenTrilCalled_thenResultIsStoredInSource(void) {
+        givenMatrix(src);
+        givenMatrix(src_deep_copy);
+
+        struct matrix * result = matrix__tril(src,0);
+
+        ASSERT_MATRIX_SHALLOW_COPY(src, result);
 }
 
 #undef expectedResult
@@ -262,7 +323,7 @@ void test_trilWithOneRowBelowDiagonal(void) {
                 .rows = 5, .cols=1)
 
 #define thenResultIsOnes(expected, actual) do {\
-                one_is_another_deep_copy(expected, actual);\
+                ASSERT_MATRIX_DEEP_COPY(expected, actual);\
         } while(0)
 
 void test_generatingOnes(void) {
@@ -300,9 +361,9 @@ struct matrix * (mat) = &(struct matrix){\
 void test_givenMatrix_whenZeroOutDiagonal_thenResultIs(void) {
         givenMatrix(mat);
 
-        matrix__zero_out_diagonal(mat);
+        matrix__zero_out_diag(mat);
         struct matrix *expected = expectedResult;
-        one_is_another_deep_copy(expected, mat);
+        ASSERT_MATRIX_DEEP_COPY(expected, mat);
 }
 
 
@@ -367,10 +428,10 @@ struct matrix * (mat) = &(struct matrix){\
 void test_givenMatrix_thenDiagonalIs(void) {
         givenMatrix(mat);
 
-        struct matrix *diagonal = matrix__diagonal(mat);
+        struct matrix *diagonal = matrix__diag(mat);
 
         struct matrix *expected = expectedResult;
-        one_is_another_deep_copy(expected,diagonal);
+        ASSERT_MATRIX_DEEP_COPY(expected, diagonal);
 }
 
 #undef givenMatrix
@@ -391,7 +452,7 @@ void test_givenMatrixToCopy_whenDeepCopying_thenSourceMatrixIsUntouched(void) {
         givenMatrix(src_to_test);
         void *elements_addr = src->elements;
 
-        struct matrix *dst = matrix__copy(src);
+        struct matrix *dst = matrix__deep_copy(src);
 
         TEST_ASSERT_EQUAL(src_to_test->rows, src->rows);
         TEST_ASSERT_EQUAL(src_to_test->cols, src->cols);
@@ -415,7 +476,7 @@ struct matrix * (mat) = &(struct matrix){\
 void test_givenMatrixToCopy_whenDeepCopying_thenDestinationIsValidCopy(void) {
         givenMatrix(src);
 
-        struct matrix *dst = matrix__copy(src);
+        struct matrix *dst = matrix__deep_copy(src);
 
         TEST_ASSERT_EQUAL(src->rows, dst->rows);
         TEST_ASSERT_EQUAL(src->cols, dst->cols);
@@ -451,7 +512,7 @@ void test_givenMatrixToCopy_whenDeepCopying_thenDestinationIsValidCopy(void) {
 #undef thenResultIsStoredInFirstOne
 #define thenResultIsStoredInFirstOne(expected, actual, src) do {\
                 TEST_ASSERT_EQUAL_PTR(src, actual);\
-                one_is_another_deep_copy(expected, actual);\
+                ASSERT_MATRIX_DEEP_COPY(expected, actual);\
         } while(0)
 
 void test_givenTwoMatrices_whenSubtracting_thenResultIsStoredInFirstOne(void) {

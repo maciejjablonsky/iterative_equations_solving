@@ -83,34 +83,27 @@ struct matrix *matrix__gen_band(element_t *first_row, len_t first_row_len, len_t
 }
 
 struct matrix *matrix__triu(struct matrix *mat, uint start_diagonal) {
-        struct matrix *U = __calloc_matrix(matrix__len(mat));
-        if (U == NULL)
-                return NULL;
-        U->rows = mat->rows;
-        U->cols = mat->cols;
-
         len_t cols = mat->cols;
-        for (uint i = 0; i < mat->rows; ++i) {
-                len_t offset = i * (cols + 1);
-                memcpy(U->elements + offset + start_diagonal, mat->elements + offset + start_diagonal,
-                       (cols - i - start_diagonal) * sizeof(*U->elements));
+        len_t rows = mat->rows;
+        for (uint i = 0; i < rows - start_diagonal; ++i) {
+                memset(mat->elements+  i * cols, 0, (i + start_diagonal) * sizeof(*mat->elements));
         }
-        return U;
+        for (uint i = rows - start_diagonal; i < rows; ++i) {
+                memset(mat->elements + i*cols, 0, cols * sizeof(*mat->elements));
+        }
+        return mat;
 }
 
 struct matrix *matrix__tril(struct matrix *mat, uint start_diagonal) {
-        struct matrix *L = __calloc_matrix(matrix__len(mat));
-        if (L == NULL)
-                return NULL;
-        L->rows = mat->rows;
-        L->cols = mat->cols;
-
+        len_t rows = mat->rows;
         len_t cols = mat->cols;
-        for (uint i = 0; i < mat->rows; ++i) {
-                len_t n = (signed) (i + 1 - start_diagonal) < 0 ? 0 : (i + 1 - start_diagonal);
-                memcpy(L->elements + i * cols, mat->elements + i * cols, n * sizeof(*L->elements));
+        for (uint i = 0; i < start_diagonal; ++i) {
+                memset(mat->elements + i * cols, 0, cols * sizeof(*mat->elements));
         }
-        return L;
+        for (uint i = 0; i < rows; ++i) {
+                memset(mat->elements + (i + start_diagonal) * cols + i + 1, 0, (cols - i - 1) * sizeof(*mat->elements));
+        }
+        return mat;
 }
 
 
@@ -139,17 +132,17 @@ struct matrix *matrix__ones(len_t n) {
         return mat;
 }
 
-void matrix__zero_out_diagonal(struct matrix *mat) {
+void matrix__zero_out_diag(struct matrix *mat) {
         for (int i = 0; i < mat->rows; ++i) {
                 mat->elements[i * (mat->cols + 1)] = 0;
         }
 }
 
 
-void matrix__multiply_by_scalar(struct matrix *mat, element_t value) {
+void matrix__multiply_by_scalar(struct matrix *mat, element_t multiplier) {
         len_t len = matrix__len(mat);
         for (int i = 0; i < len; ++i) {
-                mat->elements[i] *= value;
+                mat->elements[i] *= multiplier;
         }
 }
 
@@ -179,7 +172,7 @@ struct matrix * matrix__add(struct matrix * left, struct matrix *right) {
         return left;
 }
 
-struct matrix *matrix__copy(const struct matrix *const original) {
+struct matrix *matrix__deep_copy(const struct matrix *const original) {
         struct matrix *copy = __malloc_matrix(matrix__len(original));
         if (copy == NULL)
                 return NULL;
@@ -189,7 +182,7 @@ struct matrix *matrix__copy(const struct matrix *const original) {
         return copy;
 }
 
-struct matrix *matrix__diagonal(struct matrix *mat) {
+struct matrix *matrix__diag(struct matrix *mat) {
         if (mat->rows != mat->cols) {
                 LOG_ERROR("Cannot extract diagonal from not square matrix. [rows = %u][cols = %u]", mat->rows,
                           mat->cols);
@@ -207,7 +200,7 @@ struct matrix *matrix__diagonal(struct matrix *mat) {
         return diagonal;
 }
 
-struct matrix *matrix__multiply(struct matrix *A, struct matrix *B) {
+struct matrix *matrix__mul(struct matrix *A, struct matrix *B) {
         if (A->cols != B->rows) {
                 LOG_ERROR("Shapes don't match for multiplication. [left: %ux%u][right: %ux%u]", A->rows, A->cols,
                           B->rows, B->cols);

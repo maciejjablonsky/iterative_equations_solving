@@ -2,7 +2,7 @@
 #include "logging.h"
 
 struct matrix *lin_eq_sys__residuum(struct matrix *A, struct matrix *solution, struct matrix *b) {
-        struct matrix *residuum = matrix__multiply(A, solution);
+        struct matrix *residuum = matrix__mul(A, solution);
         if (residuum == NULL) {
                 LOG_ERROR("Can't calculate residuum, multiplication returned NULL.");
                 return NULL;
@@ -34,16 +34,16 @@ struct matrix *lin_eq_sys__forward_substitution(struct matrix *L, struct matrix 
 struct matrix *lin_eq_sys__jacobi(struct matrix *A, struct matrix *b, int *iterations) {
         struct matrix *x = matrix__ones(b->rows);
 
-        struct matrix *D = matrix__diagonal(A);
-        struct matrix *L_U = matrix__copy(A);
-        matrix__zero_out_diagonal(L_U);
+        struct matrix *D = matrix__diag(A);
+        struct matrix *L_U = matrix__deep_copy(A);
+        matrix__zero_out_diag(L_U);
 
 //        print_matrix_to_file(D, "diagonal.txt");
 //        print_matrix_to_file(L_U, "L_U.txt");
 //        print_matrix_to_file(x, "x.txt");
         int iter = 0;
         while (lin_eq_sys__is_solution_close_enough(A, x, b)) {
-                struct matrix *x_next = matrix__multiply(L_U, x);
+                struct matrix *x_next = matrix__mul(L_U, x);
 //                print_matrix_to_file(x_next, "x_after_mul.txt");
                 matrix__delete(x);
                 matrix__multiply_by_scalar(x_next, -1);

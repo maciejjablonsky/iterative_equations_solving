@@ -38,7 +38,7 @@
         }
 
 #define thenResultIsValid(expected, actual) do {\
-                one_is_another_deep_copy(expected, actual);\
+                ASSERT_MATRIX_DEEP_COPY(expected, actual);\
         } while(0)
 
 
@@ -72,14 +72,13 @@ void test_givenSystemOfEquations_whenCountedResiduum_thenResultIsValid(void) {
                 }, .rows=3, .cols=1)
 
 #define thenResultIsSolution(expected, actual) do {\
-                one_is_another_deep_copy(expected, actual);\
+                ASSERT_MATRIX_DEEP_COPY(expected, actual);\
         } while (0)
 
 void test_givenLeftTriangularMatrixAndBVector_whenSolvingWithForwardSubstitution_thenResultIsVector(void) {
         givenSystemAndB(A, b);
 
         struct matrix *result = lin_eq_sys__forward_substitution(A, b);
-        print_matrix(result);
         expectedResult(expected);
         thenResultIsSolution(expected, result);
 }

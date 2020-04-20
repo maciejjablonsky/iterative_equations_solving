@@ -1,21 +1,26 @@
 #ifndef EQUATIONS_MATRIX_TEST_HELPER_H
 #define EQUATIONS_MATRIX_TEST_HELPER_H
 
-void one_is_another_deep_copy(struct matrix *one, struct matrix *another) {
-        TEST_ASSERT_EQUAL(one->rows, another->rows);
-        TEST_ASSERT_EQUAL(one->cols, another->cols);
+void ASSERT_MATRIX_DEEP_COPY(struct matrix *expected, struct matrix *actual) {
+        TEST_ASSERT_EQUAL(expected->rows, actual->rows);
+        TEST_ASSERT_EQUAL(expected->cols, actual->cols);
 
-        len_t len = matrix__len(one);
-        len = matrix__len(another) > len ? matrix__len(another) : len;
-        TEST_ASSERT_EQUAL_DOUBLE_ARRAY(one->elements, another->elements, len);
-        TEST_ASSERT_NOT_EQUAL(one->elements, another->elements);
+        len_t len = matrix__len(expected);
+        len = matrix__len(actual) > len ? matrix__len(actual) : len;
+        TEST_ASSERT_EQUAL_DOUBLE_ARRAY(expected->elements, actual->elements, len);
+        TEST_ASSERT_NOT_EQUAL(expected->elements, actual->elements);
 }
 
-bool one_is_another_shallow_copy(struct matrix *one, struct matrix *another) {
-        TEST_ASSERT_EQUAL(one->rows, another->rows);
-        TEST_ASSERT_EQUAL(one->cols, another->cols);
-        TEST_ASSERT_EQUAL_PTR(one->elements, another->elements);
+bool ASSERT_MATRIX_SHALLOW_COPY(struct matrix *expected, struct matrix *actual) {
+        TEST_ASSERT_EQUAL(expected->rows, actual->rows);
+        TEST_ASSERT_EQUAL(expected->cols, actual->cols);
+        TEST_ASSERT_EQUAL_PTR(expected->elements, actual->elements);
 }
+
+void ASSERT__MATRIX_NOT_CHANGED(struct matrix *before, struct matrix *now) {
+        ASSERT_MATRIX_DEEP_COPY(before, now);
+}
+
 
 #define print_matrix(mat) \
 do {\

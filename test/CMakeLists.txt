@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(tests C)
+project(iterative_solving_equations C)
 include_directories(../vendor/ceedling/vendor/unity/src)
 include_directories(../vendor/ceedling/vendor/cmock/src)
 include_directories(../vendor/ceedling/vendor/c_exception/lib)
@@ -11,10 +11,7 @@ include_directories(support)
 set(TESTS_SOURCE test_matrix.c
         test_vector.c
         test_linear_equations.c
-        support/unity_config.h)
+        support/unity_config.h
+        support/matrix_test_helper.h)
 
-
-
-#set(C_FLAGS "-Wall -Werror --std=c99 -O")
-set(CMAKE_C_FLAGS "${C_FLAGS}")
 add_executable(dummy_test ${TESTS_SOURCE})
