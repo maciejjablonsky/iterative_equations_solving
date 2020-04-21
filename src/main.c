@@ -40,7 +40,7 @@ int main() {
         printf("wall time: %lf [s]\n", (double)(end - start)/CLOCKS_PER_SEC);
         matrix__delete(lu);
 
-//        matrix__delete(gauss_seidel);
+        matrix__delete(gauss_seidel);
         matrix__delete(A);
         matrix__delete(b);
 }

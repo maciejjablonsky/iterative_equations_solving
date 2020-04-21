@@ -18,19 +18,19 @@ struct matrix *lin_eq_sys__residuum(struct matrix *A, struct matrix *solution, s
 }
 
 struct matrix *lin_eq_sys__forward_substitution(struct matrix *L, struct matrix *b) {
-        struct matrix *result = __calloc_matrix(matrix__len(b));
-        if (result == NULL)
-                return NULL;
-        result->cols = 1;
-        result->rows = b->rows;
+//        struct matrix *result = __calloc_matrix(matrix__len(b));
+//        if (result == NULL)
+//                return NULL;
+//        result->cols = 1;
+//        result->rows = b->rows;
         for (int i = 0; i < b->rows; ++i) {
                 element_t res = b->elements[i];
                 for (int j = 0; j < i; ++j) {
-                        res -= L->elements[i*L->cols +j] * result->elements[j];
+                        res -= L->elements[i*L->cols +j] * b->elements[j];
                 }
-                result->elements[i] = res / L->elements[i*(L->cols + 1)];
+                b->elements[i] = res / L->elements[i*(L->cols + 1)];
         }
-        return result;
+        return b;
 }
 
 struct matrix *lin_eq_sys__jacobi(struct matrix *A, struct matrix *b, int *iterations) {
@@ -73,8 +73,8 @@ struct matrix *lin_eq_sys__gauss_seidel(struct matrix *A, struct matrix *b, int 
                 matrix__delete(x);
                 matrix__multiply_by_scalar(x_next, -1);
                 matrix__add(x_next, b);
-                x = lin_eq_sys__forward_substitution(D_L, x_next);
-                matrix__delete(x_next);
+                x_next = lin_eq_sys__forward_substitution(D_L, x_next);
+                x = x_next;
                 iter++;
         }
         clock_t end = clock();
@@ -150,10 +150,11 @@ void lin_eq_sys__LU_decomposition(struct matrix *L, struct matrix *U) {
 struct matrix *lin_eq_sys__solve_using_LU_decomposition(struct matrix *A, struct matrix *b) {
         struct matrix * U = A;
         struct matrix * L = matrix__eye(b->rows);
+        struct matrix * b_copy = matrix__deep_copy(b);
         lin_eq_sys__LU_decomposition(L, U);
-        struct matrix * y = lin_eq_sys__forward_substitution(L, b);
+        struct matrix * y = lin_eq_sys__forward_substitution(L, b_copy);
         struct matrix * x = lin_eq_sys__backward_substitution(U, y);
         matrix__delete(L);
-        matrix__delete(y);
+        matrix__delete(b_copy);
         return x;
 }
