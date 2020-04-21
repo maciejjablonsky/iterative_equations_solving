@@ -62,7 +62,7 @@ struct matrix *__calloc_matrix(len_t elements_length);
  * @brief sets diagonal elements to zero
  * @param[in,out] mat processed matrix
  */
-void matrix__zero_out_diag(struct matrix *mat);
+void matrix__zero_diag(struct matrix *mat);
 
 /**
  * @brief multiplies matrix element by element
@@ -143,6 +143,7 @@ struct matrix * matrix__add(struct matrix * left, struct matrix *right);
  * @param[in] mat matrix to print
  * @param[in] filename file to store print
  */
-void print_matrix_to_file(struct matrix *mat, const char *filename);
+void print_matrix_to_file(struct matrix *mat, const char *filename, const char *mode);
+
 
 #endif // MATRIX_H

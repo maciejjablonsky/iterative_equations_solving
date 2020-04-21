@@ -132,7 +132,7 @@ struct matrix *matrix__ones(len_t n) {
         return mat;
 }
 
-void matrix__zero_out_diag(struct matrix *mat) {
+void matrix__zero_diag(struct matrix *mat) {
         for (int i = 0; i < mat->rows; ++i) {
                 mat->elements[i * (mat->cols + 1)] = 0;
         }
@@ -188,16 +188,13 @@ struct matrix *matrix__diag(struct matrix *mat) {
                           mat->cols);
                 return NULL;
         }
-        struct matrix *diagonal = __calloc_matrix(mat->rows * mat->cols);
-        if (diagonal == NULL)
-                return NULL;
-        diagonal->rows = mat->rows;
-        diagonal->cols = mat->cols;
-        uint limit = matrix__len(mat);
-        for (uint i = 0; i < limit; i += mat->cols + 1) {
-                diagonal->elements[i] = mat->elements[i];
+        len_t rows = mat->rows;
+        len_t cols = mat->cols;
+        for (uint i = 0; i < rows; ++i) {
+                memset(mat->elements + i*cols, 0, i*sizeof(*mat->elements));
+                memset(mat->elements + i*cols + i + 1, 0, (cols - i - 1) *sizeof(element_t));
         }
-        return diagonal;
+        return mat;
 }
 
 struct matrix *matrix__mul(struct matrix *A, struct matrix *B) {
@@ -261,11 +258,11 @@ struct matrix * matrix__delete(struct matrix * mat) {
         return NULL;
 }
 
-void print_matrix_to_file(struct matrix *mat, const char *filename) {
-        FILE * file = fopen(filename, "a");
+void print_matrix_to_file(struct matrix *mat, const char *filename, const char *mode) {
+        FILE * file = fopen(filename, mode);
         for (int i = 0; i < mat->rows; ++i) {
                 for (int j = 0; j < mat->cols; ++j) {
-                        fprintf(file, "%8.4Lg\t", mat->elements[i*mat->cols + j]);
+                        fprintf(file, "%.15Lg\t", mat->elements[i*mat->cols + j]);
                 }
                 fputc('\n', file);
         }

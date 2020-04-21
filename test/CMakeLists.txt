@@ -12,6 +12,6 @@ set(TESTS_SOURCE test_matrix.c
         test_vector.c
         test_linear_equations.c
         support/unity_config.h
-        support/matrix_test_helper.h)
+        support/matrix_test_helper.h ../src/execution_test.c)
 
 add_executable(dummy_test ${TESTS_SOURCE})

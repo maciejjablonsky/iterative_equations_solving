@@ -361,7 +361,7 @@ struct matrix * (mat) = &(struct matrix){\
 void test_givenMatrix_whenZeroOutDiagonal_thenResultIs(void) {
         givenMatrix(mat);
 
-        matrix__zero_out_diag(mat);
+        matrix__zero_diag(mat);
         struct matrix *expected = expectedResult;
         ASSERT_MATRIX_DEEP_COPY(expected, mat);
 }
