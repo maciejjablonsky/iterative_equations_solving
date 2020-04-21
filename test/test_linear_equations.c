@@ -4,6 +4,8 @@
 #include "vector.h"
 #include "matrix_test_helper.h"
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 #undef givenSystemOfEquations
 #define givenSystemOfEquations(A, solutions, b) \
                 struct matrix *(A) = &(struct matrix) {\
@@ -101,7 +103,7 @@ void test_givenLeftTriangularMatrixAndBVector_whenSolvingWithForwardSubstitution
                         }, .rows = 4, .cols = 1);
 
 #undef expectedResult
-#define expectedResult(expected) struct matrix * (expected) = &matrix_struct(\
+#define expectedResult &matrix_struct(\
                 .elements=(element_t[]){\
                         -0.235,\
                         -0.07,\
@@ -109,19 +111,11 @@ void test_givenLeftTriangularMatrixAndBVector_whenSolvingWithForwardSubstitution
                         0.4\
                 }, .rows=4, .cols=1)
 
-#undef thenResultIsSolution
-#define thenResultIsSolution(expected, actual) do {\
-                ASSERT_MATRIX_IS_WITHOUT_INF(actual);\
-                ASSERT_MATRIX_DEEP_COPY(expected, actual);\
-        } while (0)
-
-
-
 void test_givenUpperTriangularMatrixAndBVector_whenSolvingWithBackwardSubstitution_thenResultIsCorrectSolution(void) {
         givenSystemAndB(A, b);
         struct matrix *solution = lin_eq_sys__backward_substitution(A, b);
-        expectedResult(expected);
-        thenResultIsSolution(expected, solution);
+
+        ASSERT_MATRIX_VALID_AND_AS_EXPECTED(expectedResult, solution);
 }
 
 #undef givenSystemOfLinearEquations
@@ -146,7 +140,7 @@ void test_givenUpperTriangularMatrixAndBVector_whenSolvingWithBackwardSubstituti
                 }
 
 #undef expectedResult
-#define expectedResult(expected) struct matrix * (expected) = &(struct matrix){\
+#define expectedResult &(struct matrix){\
                 .elements = (element_t[]){\
                         1.664358663666262e-01,\
                         2.445473429115458e-01,\
@@ -156,26 +150,89 @@ void test_givenUpperTriangularMatrixAndBVector_whenSolvingWithBackwardSubstituti
                 }, .rows = 5, .cols = 1\
         }
 
-#undef thenResultIsSolution
-#define thenResultIsSolution(expected, actual) do {\
-                ASSERT_MATRIX_NOT_NAN(actual);\
-                ASSERT_MATRIX_IS_WITHOUT_INF(actual);\
-                ASSERT_MATRIX_DEEP_COPY(expected, actual);\
-        } while (0)
-
 void test_givenSystemOfLinearEquations_whenSolvingWithJacobiMethod_thenResultIsCorrectSolution(void) {
         givenSystemOfLinearEquations(A, b);
         int iterations = 0;
-        struct matrix * solution = lin_eq_sys__jacobi(A, b, &iterations);
-        expectedResult(expected);
-        thenResultIsSolution(expected, solution);
+        struct matrix *solution = lin_eq_sys__jacobi(A, b, &iterations);
+
+        ASSERT_MATRIX_VALID_AND_AS_EXPECTED(expectedResult, solution);
 }
 
 void test_givenSystemOfLinearEquations_whenSolvingWithGaussSeidelMethod_thenResultIsCorrectSolution(void) {
         givenSystemOfLinearEquations(A, b);
         int iterations = 0;
 
-        struct matrix * solution = lin_eq_sys__gauss_seidel(A, b, &iterations);
-        expectedResult(expected);
-        thenResultIsSolution(expected, solution);
+        struct matrix *solution = lin_eq_sys__gauss_seidel(A, b, &iterations);
+
+        ASSERT_MATRIX_VALID_AND_AS_EXPECTED(expectedResult, solution);
 }
+
+void test_givenSystemOfLinearEquations_whenSolvingWithLUDecomposition_thenResultIsCorrectSolution(void) {
+        givenSystemOfLinearEquations(A, b);
+        struct matrix *solution = lin_eq_sys__solve_using_LU_decomposition(A, b);
+
+        ASSERT_MATRIX_VALID_AND_AS_EXPECTED(expectedResult, solution);
+}
+
+#undef givenSystemMatrix
+#define givenSystemMatrix(mat_a) struct matrix *(mat_a) = &(struct matrix) {\
+                .elements = (element_t[]) {\
+                        3, 2, 1, 3,\
+                        4, 1, 1, 2,\
+                        2, 1, 4, 3,\
+                        3, 2, 1, 4\
+                }, .rows = 4, .cols = 4\
+        }
+
+
+#undef expectedResult
+#define expectedResult &(struct matrix){\
+                .elements=(element_t[]){\
+                        1.000000000000000e+00,   0.000000000000000e+00,   0.000000000000000e+00,   0.000000000000000e+00,\
+                        1.333333333333333e+00,   1.000000000000000e+00,   0.000000000000000e+00,   0.000000000000000e+00,\
+                        6.666666666666666e-01,   2.000000000000000e-01,   1.000000000000000e+00,   0.000000000000000e+00,\
+                        1.000000000000000e+00,  -0.000000000000000e+00,   0.000000000000000e+00,   1.000000000000000e+00,\
+                }, .rows = 4, .cols = 4\
+        }
+
+void test_givenSystemMatrix_whenLUDecompositionUsed_thenLIsValid(void) {
+        givenSystemMatrix(A);
+        struct matrix *U = matrix__deep_copy(A);
+        struct matrix *L = matrix__eye(A->rows);
+
+        lin_eq_sys__LU_decomposition(L, U);
+
+        ASSERT_MATRIX_VALID_AND_AS_EXPECTED(expectedResult, L);
+}
+
+#undef expectedResult
+#define expectedResult &(struct matrix) {\
+                .elements=(element_t[]) {\
+                        3.000000000000000e+00, 2.000000000000000e+00, 1.000000000000000e+00, 3.000000000000000e+00,\
+                        0.000000000000000e+00, -1.666666666666667e+00, -3.333333333333333e-01, -2.000000000000000e+00,\
+                        0.000000000000000e+00, 0.000000000000000e+00, 3.400000000000000e+00, 1.400000000000000e+00,\
+                        0.000000000000000e+00, 0.000000000000000e+00, 0.000000000000000e+00, 1.000000000000000e+00,\
+                }, .rows = 4, .cols = 4\
+        }
+
+void test_givenSystemMatrix_whenLUDecompositionUsed_thenUIsValid(void) {
+        givenSystemMatrix(A);
+        struct matrix *U = matrix__deep_copy(A);
+        struct matrix *L = matrix__eye(A->rows);
+
+        lin_eq_sys__LU_decomposition(L, U);
+
+        ASSERT_MATRIX_VALID_AND_AS_EXPECTED(expectedResult, U);
+}
+
+void test_givenSystemMatrix_whenLUDecompositionUsed_thenLTimesUEqualsSystemMatrix(void) {
+        givenSystemMatrix(A);
+        struct matrix * U = matrix__deep_copy(A);
+        struct matrix * L = matrix__eye(A->rows);
+        lin_eq_sys__LU_decomposition(L, U);
+
+        struct matrix * result = matrix__mul(L, U);
+        ASSERT_MATRIX_VALID_AND_AS_EXPECTED(A, result);
+}
+
+#pragma clang diagnostic pop

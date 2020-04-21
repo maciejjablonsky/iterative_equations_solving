@@ -23,6 +23,13 @@ struct matrix * lin_eq_sys__forward_substitution_when_left_diagonal(struct matri
 
 struct matrix * lin_eq_sys__backward_substitution(struct matrix * U, struct matrix * b);
 
-struct matrix * lin_eq_sys__lu_decomposition(struct matrix * U, struct matrix *b);
+struct matrix * lin_eq_sys__solve_using_LU_decomposition(struct matrix * A, struct matrix *b);
+
+/**
+ * @brief takes two matrices of the same size and does LU decomposition
+ * @param[in, out] L eye matrix, after call stores lower triangular matrix of decomposition
+ * @param[in, out] U square matrix initialized to system matrix, after call stores upper triangular matrix of decomposition
+ */
+void lin_eq_sys__LU_decomposition(struct matrix * L, struct matrix *U);
 
 #endif // LINEAR_EQUATIONS_H
