@@ -5,7 +5,7 @@ set(CMAKE_C_FLAGS "${C_FLAGS}")
 include_directories(include)
 include_directories(internals)
 
-set(SOURCE_FILES matrix.c vector.c helper.c linear_equations.c)
+set(SOURCE_FILES matrix.c vector.c linear_equations.c)
 add_executable(time ${SOURCE_FILES} main.c)
 target_link_libraries(time m)
 

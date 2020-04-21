@@ -27,16 +27,23 @@ void ASSERT__MATRIX_NOT_CHANGED(struct matrix *before, struct matrix *now) {
         ASSERT_MATRIX_DEEP_COPY(before, now);
 }
 
-#define ASSERT_MATRIX_NOT_NAN(matrix) do {\
-        TEST_ASSERT_NOT_NULL(matrix);\
-                for (int i = 0; i < matrix->rows; i++) {\
-                        for (int j = 0; i < matrix->cols; j++) {\
-                                char message[128];\
-                                sprintf(message, "Element at [%dx%d] is nan.", i, j);\
-                                TEST_ASSERT_DOUBLE_IS_NOT_NAN_MESSAGE(matrix->elements[i*matrix->cols + j], message);\
-                        }\
-                }\
-        } while(0)
+void ASSERT_MATRIX_NOT_NAN(struct matrix * mat) {
+        TEST_ASSERT_NOT_NULL(mat);
+        bool nan_occured = false;
+        for (int i = 0; i < mat->rows; ++i) {
+                for (int j = 0; j < mat->cols; ++j) {
+                        char message[128];
+                        if (isnanl(mat->elements[i*mat->cols + j])) {
+                                sprintf(message, "nan error: [%dx%d] = %Le",i, j, mat->elements[i*mat->cols + j]);
+                                TEST_MESSAGE(message);
+                                nan_occured = true;
+                        }
+                }
+        }
+        if (nan_occured)
+                TEST_FAIL_MESSAGE("NaN value in matrix.");
+}
+
 
 void ASSERT_MATRIX_IS_WITHOUT_INF(struct matrix * actual) {
         for (int i = 0; i < actual->rows; ++i) {

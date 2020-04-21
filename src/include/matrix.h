@@ -145,5 +145,10 @@ struct matrix * matrix__add(struct matrix * left, struct matrix *right);
  */
 void print_matrix_to_file(struct matrix *mat, const char *filename, const char *mode);
 
-
+/**
+ * @brief creates square matrix with diagonal elements set to 1 and others to 0
+ * @param len number of rows or columns
+ * @return heap allocated matrix object with initialized elements
+ */
+struct matrix * matrix__eye(uint len);
 #endif // MATRIX_H

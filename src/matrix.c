@@ -2,7 +2,6 @@
 #include <matrix.h>
 #include <logging.h>
 #include <string.h>
-#include "helper.h"
 
 #define MAGIC_f 5
 
@@ -268,6 +267,17 @@ void print_matrix_to_file(struct matrix *mat, const char *filename, const char *
         }
         fprintf(file, "\n\n");
         fclose(file);
+}
+
+struct matrix *matrix__eye(uint len) {
+        struct matrix * eye = __calloc_matrix(len* len);
+        if (eye == NULL)
+                return NULL;
+        eye->rows = eye->cols = len;
+        for (uint i = 0; i < len; ++i) {
+                eye->elements[i * (len + 1)] = 1;
+        }
+        return eye;
 }
 
 

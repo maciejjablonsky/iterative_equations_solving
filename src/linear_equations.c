@@ -46,7 +46,7 @@ struct matrix *lin_eq_sys__jacobi(struct matrix *A, struct matrix *b, int *itera
                 matrix__delete(x);
                 matrix__multiply_by_scalar(x_next, -1);
                 matrix__add(x_next, b);
-                x = lin_eq_sys__forward_substitution(D, x_next);
+                x = lin_eq_sys__forward_substitution_when_left_diagonal(D, x_next);
                 matrix__delete(x_next);
                 iter++;
         }
@@ -121,4 +121,9 @@ struct matrix *lin_eq_sys__backward_substitution(struct matrix *U, struct matrix
                 result->elements[i] /= U->elements[i * (U->cols + 1)];
         }
         return result;
+}
+
+struct matrix *lin_eq_sys__lu_decomposition(struct matrix *A, struct matrix *b) {
+        return NULL;
+
 }

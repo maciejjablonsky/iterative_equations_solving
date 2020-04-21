@@ -2,7 +2,6 @@
 #include "linear_equations.h"
 #include "matrix.h"
 #include "vector.h"
-#include "helper.h"
 #include "matrix_test_helper.h"
 
 #undef givenSystemOfEquations
@@ -159,6 +158,7 @@ void test_givenUpperTriangularMatrixAndBVector_whenSolvingWithBackwardSubstituti
 
 #undef thenResultIsSolution
 #define thenResultIsSolution(expected, actual) do {\
+                ASSERT_MATRIX_NOT_NAN(actual);\
                 ASSERT_MATRIX_IS_WITHOUT_INF(actual);\
                 ASSERT_MATRIX_DEEP_COPY(expected, actual);\
         } while (0)

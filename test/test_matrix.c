@@ -1,10 +1,11 @@
 #include "unity.h"
 #include "matrix.h"
-#include "helper.h"
 #include <stdbool.h>
 #include "vector.h"
 #include "matrix_test_helper.h"
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 #undef givenMatrix
 #define givenMatrix(mat) struct matrix * (mat) = &(struct matrix){\
                 .elements = (element_t[]){\
@@ -310,7 +311,6 @@ struct matrix * (mat) = &(struct matrix){\
 
 void test_givenSourceMatrix_whenTrilCalled_thenResultIsStoredInSource(void) {
         givenMatrix(src);
-        givenMatrix(src_deep_copy);
 
         struct matrix * result = matrix__tril(src,0);
 
@@ -483,7 +483,7 @@ void test_givenMatrixToCopy_whenDeepCopying_thenDestinationIsValidCopy(void) {
         TEST_ASSERT_EQUAL_DOUBLE_ARRAY(src->elements, dst->elements, matrix__len(src));
 
         // not equal pointers
-        TEST_ASSERT_NOT_EQUAL(src->elements, dst->elements);
+        TEST_ASSERT_NOT_EQUAL(src->elements, dst->elements)
 }
 
 #undef givenTwoMatrices
@@ -499,7 +499,7 @@ void test_givenMatrixToCopy_whenDeepCopying_thenDestinationIsValidCopy(void) {
                                 4, 3, 2,\
                                 6, 5, 4\
                         }, .rows = 2, .cols = 3\
-                };
+                }
 
 #undef expectedResult
 #define expectedResult(expected) struct matrix * (expected) = &(struct matrix){\
@@ -537,7 +537,7 @@ void test_givenTwoMatrices_whenSubtracting_thenResultIsStoredInFirstOne(void) {
                                 4, 3, 2,\
                                 6, 5, 4\
                         }, .rows = 2, .cols = 3\
-                };
+                }
 
 #undef expectedResult
 #define expectedResult(expected) struct matrix * (expected) = &(struct matrix){\
@@ -548,6 +548,8 @@ void test_givenTwoMatrices_whenSubtracting_thenResultIsStoredInFirstOne(void) {
         }
 
 
+
+
 void test_givenTwoMatrices_whenAdding_thenResultIsStoredInFirstOne(void) {
         givenTwoMatrices(matA, matB);
 
@@ -556,3 +558,20 @@ void test_givenTwoMatrices_whenAdding_thenResultIsStoredInFirstOne(void) {
         expectedResult(expected);
         thenResultIsStoredInFirstOne(expected, result, matA);
 }
+
+#undef expectedResult
+#define expectedResult &(struct matrix){\
+                .elements=(element_t[]){\
+                        1, 0, 0, 0,\
+                        0, 1, 0, 0,\
+                        0, 0, 1, 0,\
+                        0, 0, 0, 1\
+                }, .rows = 4, .cols = 4\
+        }
+void test_givenLength_thenEyeCreated(void) {
+        uint len = 4;
+        struct matrix * result = matrix__eye(len);
+        ASSERT_MATRIX_NOT_NAN(result);
+        ASSERT_MATRIX_DEEP_COPY(expectedResult, result);
+}
+#pragma clang diagnostic pop
