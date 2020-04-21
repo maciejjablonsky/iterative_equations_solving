@@ -9,7 +9,7 @@
 
 typedef unsigned int len_t;
 typedef unsigned int uint;
-typedef long double element_t;
+typedef double element_t;
 
 struct vector {
     element_t * elements;
@@ -21,7 +21,7 @@ struct vector {
 
 struct vector * vector_ones(len_t n);
 
-element_t vector__dot_product(const element_t *vecA, const element_t *vecB, size_t len);
+element_t vector__dot_product(const element_t *vecA, const element_t *vecB, int len);
 
 element_t *
 vectors__dot_products(element_t *vectorsA, element_t *vectorsB, size_t number_of_vectors, size_t each_vector_length);

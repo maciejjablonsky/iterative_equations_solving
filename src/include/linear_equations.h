@@ -3,7 +3,7 @@
 #include "matrix.h"
 
 #ifdef TEST
-#define SOLUTION_EPSILON (1e-15)
+#define SOLUTION_EPSILON (1e-9)
 #else
 #define SOLUTION_EPSILON (1e-9)
 #endif

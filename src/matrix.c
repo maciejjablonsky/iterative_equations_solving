@@ -141,7 +141,8 @@ void matrix__zero_diag(struct matrix *mat) {
 void matrix__multiply_by_scalar(struct matrix *mat, element_t multiplier) {
         len_t len = matrix__len(mat);
         for (int i = 0; i < len; ++i) {
-                mat->elements[i] *= multiplier;
+                mat->elements[i]  *= multiplier;
+
         }
 }
 
@@ -217,7 +218,6 @@ struct matrix *matrix__transpose(struct matrix *mat) {
         }
         len_t rows = transposed->cols = mat->rows;
         len_t cols = transposed->rows = mat->cols;
-
         for (int r = 0; r < rows; ++r) {
                 for (int c = 0; c < cols; ++c) {
                         transposed->elements[r + rows * c] = mat->elements[c + cols * r];
@@ -243,7 +243,7 @@ matrix__multiply_one_by_second_transposed(struct matrix *left, struct matrix *ri
         len_t row_len = left->cols;
         for (int i = 0; i < left->rows; ++i) {
                 for (int j = 0; j < right_transposed->rows; ++j) {
-                        result->elements[k] = vector__dot_product(left->elements + i * row_len,
+                        result->elements[k] = vector__dot_product(left->elements + i*row_len,
                                                                   right_transposed->elements + j * row_len, row_len);
                         ++k;
                 }
@@ -261,7 +261,7 @@ void print_matrix_to_file(struct matrix *mat, const char *filename, const char *
         FILE * file = fopen(filename, mode);
         for (int i = 0; i < mat->rows; ++i) {
                 for (int j = 0; j < mat->cols; ++j) {
-                        fprintf(file, "%.15Lg\t", mat->elements[i*mat->cols + j]);
+                        fprintf(file, "%.15lg\t", mat->elements[i*mat->cols + j]);
                 }
                 fputc('\n', file);
         }

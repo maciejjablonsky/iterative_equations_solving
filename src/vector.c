@@ -3,7 +3,7 @@
 
 
 
-element_t vector__dot_product(const element_t *vecA, const element_t *vecB, size_t len) {
+element_t vector__dot_product(const element_t *vecA, const element_t *vecB, int len) {
 	element_t dot_product = 0;
 	for (int i = 0; i < len; ++i) {
 		dot_product += vecA[i] * vecB[i];

@@ -1,6 +1,7 @@
 #include "linear_equations.h"
 #include "logging.h"
 #include <stdlib.h>
+#include <time.h>
 
 struct matrix *lin_eq_sys__residuum(struct matrix *A, struct matrix *solution, struct matrix *b) {
         struct matrix *residuum = matrix__mul(A, solution);
@@ -23,11 +24,11 @@ struct matrix *lin_eq_sys__forward_substitution(struct matrix *L, struct matrix 
         result->cols = 1;
         result->rows = b->rows;
         for (int i = 0; i < b->rows; ++i) {
-                result->elements[i] = b->elements[i];
+                element_t res = b->elements[i];
                 for (int j = 0; j < i; ++j) {
-                        result->elements[i] -= L->elements[i * L->cols + j] * result->elements[j];
+                        res -= L->elements[i*L->cols +j] * result->elements[j];
                 }
-                result->elements[i] /= L->elements[i * (L->cols + 1)];
+                result->elements[i] = res / L->elements[i*(L->cols + 1)];
         }
         return result;
 }
@@ -41,6 +42,7 @@ struct matrix *lin_eq_sys__jacobi(struct matrix *A, struct matrix *b, int *itera
         matrix__zero_diag(L_U);
 
         int iter = 0;
+        clock_t start = clock();
         while (lin_eq_sys__is_solution_close_enough(A, x, b)) {
                 struct matrix *x_next = matrix__mul(L_U, x);
                 matrix__delete(x);
@@ -50,6 +52,8 @@ struct matrix *lin_eq_sys__jacobi(struct matrix *A, struct matrix *b, int *itera
                 matrix__delete(x_next);
                 iter++;
         }
+        clock_t end = clock();
+        printf("just loop time: %lf [s]\n", (double)(end - start)/CLOCKS_PER_SEC);
         matrix__delete(D);
         matrix__delete(L_U);
         *iterations = iter;
@@ -63,6 +67,7 @@ struct matrix *lin_eq_sys__gauss_seidel(struct matrix *A, struct matrix *b, int 
         struct matrix *U = matrix__deep_copy(A);
         matrix__triu(U, 1);
         int iter = 0;
+        clock_t start = clock();
         while (lin_eq_sys__is_solution_close_enough(A, x, b)) {
                 struct matrix *x_next = matrix__mul(U, x);
                 matrix__delete(x);
@@ -72,6 +77,8 @@ struct matrix *lin_eq_sys__gauss_seidel(struct matrix *A, struct matrix *b, int 
                 matrix__delete(x_next);
                 iter++;
         }
+        clock_t end = clock();
+        printf("just loop time: %lf [s]\n", (double)(end - start)/CLOCKS_PER_SEC);
         *iterations = iter;
         matrix__delete(D_L);
         matrix__delete(U);
@@ -115,9 +122,11 @@ struct matrix *lin_eq_sys__backward_substitution(struct matrix *U, struct matrix
         result->rows = b->rows;
         for (int i = b->rows - 1; i >= 0; --i) {
                 result->elements[i] = b->elements[i];
+                element_t cumsum = 0;
                 for (int j = i + 1; j < b->rows; ++j) {
-                        result->elements[i] -= U->elements[i * U->cols + j] * result->elements[j];
+                        cumsum += U->elements[i * U->cols + j] * result->elements[j];
                 }
+                result->elements[i] -= cumsum;
                 result->elements[i] /= U->elements[i * (U->cols + 1)];
         }
         return result;
