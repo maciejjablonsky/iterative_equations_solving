@@ -8,6 +8,3 @@ include_directories(internals)
 set(SOURCE_FILES matrix.c vector.c linear_equations.c)
 add_executable(time ${SOURCE_FILES} main.c)
 target_link_libraries(time m)
-
-add_executable(execution_measure execution_test.c ${SOURCE_FILES})
-target_link_libraries(execution_measure m)

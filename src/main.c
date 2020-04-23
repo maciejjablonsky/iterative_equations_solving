@@ -4,43 +4,50 @@
 #include <time.h>
 #include "linear_equations.h"
 
+#define MATRIX_SIZES (len_t[]){100, 500, 1000, 2000, 3000}//, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 15000, 20000}
+#define MATRIX_SIZES_LEN (sizeof(MATRIX_SIZES)/sizeof(*(MATRIX_SIZES)))
+#define BAND_VALUES (element_t[]){10, -1, -1}
+#define BAND_VALUES_LEN 3
+#define MAGIC_f 5
+
+double perf_whole_time(struct lin_eq_sys_performance * data) {
+        return data->init_time_seconds + data->hot_loop_time_seconds + data->cleaning_time_seconds;
+}
+
+void print_performance_to_file(FILE * stream, struct lin_eq_sys_performance * perf_data, len_t len) {
+        const len_t w = 17; // field width
+        printf("\rPerformance of Jacobi method.\n");
+        printf("%*s\t%*s\t%*s\t%*s\n",w, "matrix size [n]", w, "iterations [n]",
+               w, "whole time [s]", w, "hot loop time [s]");
+        for (int i = 0; i < len; ++i) {
+                printf("%*u\t%*u\t%*.8lf\t%*.8lf\n", w, perf_data[i].matrix_size, w, perf_data[i].iterations,
+                       w, perf_whole_time(&perf_data[i]), w, perf_data[i].hot_loop_time_seconds);
+        }
+}
+
+void present_jacobi_performance() {
+        len_t  * N = MATRIX_SIZES;
+        len_t N_len = MATRIX_SIZES_LEN;
+        struct lin_eq_sys_performance perf_data[N_len];
+        for (uint i = 0; i < N_len; ++i) {
+                len_t n = N[i];
+                printf("\rn: %u\n",n);
+                struct matrix *A = matrix__gen_band(BAND_VALUES, BAND_VALUES_LEN, n, n);
+                struct matrix *b = matrix__b(n, MAGIC_f);
+
+                perf_data[i] = __lin_eq_sys_perf__jacobi(A, b);
+
+                matrix__delete(A);
+                matrix__delete(b);
+
+        }
+
+        print_performance_to_file(stdin, perf_data, N_len);
+
+}
+
+
 
 int main() {
-        len_t n = 1000;
-        struct matrix *A = matrix__gen_band((element_t[]){12, -1, -1}, 3, n, n);
-        struct matrix *b = matrix__b(n);
-        print_matrix_to_file(b, "b.txt", "w");
-        int i = 0;
-        clock_t start = clock();
-        struct matrix * res = lin_eq_sys__jacobi(A, b, &i);
-        clock_t end = clock();
-        print_matrix_to_file(res, "jacobi_result.txt", "w");
-        printf("jacobi:\n");
-        printf("iterations: %d\n", i);
-        printf("wall time: %lf [s]\n", (double)(end - start)/CLOCKS_PER_SEC);
-        matrix__delete(res);
-        start = clock();
-        struct matrix * gauss_seidel = lin_eq_sys__gauss_seidel(A, b, &i);
-        end = clock();
-        print_matrix_to_file(gauss_seidel, "gauss_seidel_result.txt", "w");
-        printf("gauss_seidel:\n");
-        printf("iterations: %d\n", i);
-        printf("wall time: %lf [s]\n", (double)(end - start)/CLOCKS_PER_SEC);
-
-        struct matrix * A_copy = matrix__deep_copy(A);
-         start = clock();
-        struct matrix * lu = lin_eq_sys__solve_using_LU_decomposition(A_copy, b);
-        end = clock();
-        print_matrix_to_file(lu, "lu_result.txt", "w");
-        struct matrix *residuum = lin_eq_sys__residuum(A, lu, b);
-        element_t norm = vector__norm(&vector_struct(
-                .elements = residuum->elements, .len = residuum->rows)
-        );
-        printf("norm after lu decomposition: %.lg\n", norm);
-        printf("wall time: %lf [s]\n", (double)(end - start)/CLOCKS_PER_SEC);
-        matrix__delete(lu);
-
-        matrix__delete(gauss_seidel);
-        matrix__delete(A);
-        matrix__delete(b);
+        present_jacobi_performance();
 }

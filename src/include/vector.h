@@ -19,8 +19,6 @@ struct vector {
 
 #define vector_struct(...) (struct vector){__VA_ARGS__}
 
-struct vector * vector_ones(len_t n);
-
 element_t vector__dot_product(const element_t *vecA, const element_t *vecB, int len);
 
 element_t *

@@ -2,8 +2,7 @@
 #include <matrix.h>
 #include <logging.h>
 #include <string.h>
-
-#define MAGIC_f 5
+#include <float.h>
 
 
 struct matrix *__malloc_matrix(len_t elements_length) {
@@ -106,7 +105,7 @@ struct matrix *matrix__tril(struct matrix *mat, uint start_diagonal) {
 }
 
 
-struct matrix *matrix__b(len_t n) {
+struct matrix *matrix__b(len_t n, float magic_f) {
         struct matrix *b = __malloc_matrix(n);
         if (b == NULL)
                 return NULL;
@@ -114,7 +113,7 @@ struct matrix *matrix__b(len_t n) {
         b->cols = 1;
 
         for (int i = 0; i < n; ++i) {
-                b->elements[i] = sin(i * (MAGIC_f + 1));
+                b->elements[i] = sin(i * (magic_f + 1));
         }
         return b;
 }
@@ -146,7 +145,7 @@ void matrix__multiply_by_scalar(struct matrix *mat, element_t multiplier) {
         }
 }
 
-struct matrix *matrix__sub(struct matrix *left, struct matrix *right) {
+struct matrix *matrix__sub(struct matrix *left, const struct matrix *right) {
         if (left->rows != right->rows || left->cols != right->cols) {
                 LOG_ERROR("Cannot subtract matrices of different sizes. [left: %ux%u][right: %ux%u]", left->rows,
                           left->cols, right->rows, right->cols);
@@ -159,7 +158,7 @@ struct matrix *matrix__sub(struct matrix *left, struct matrix *right) {
         return left;
 }
 
-struct matrix * matrix__add(struct matrix * left, struct matrix *right) {
+struct matrix * matrix__add(struct matrix * left, const struct matrix *right) {
         if (left->rows != right->rows || left->cols != right->cols) {
                 LOG_ERROR("Cannot subtract matrices of different sizes. [left: %ux%u][right: %ux%u]", left->rows,
                           left->cols, right->rows, right->cols);
@@ -197,7 +196,7 @@ struct matrix *matrix__diag(struct matrix *mat) {
         return mat;
 }
 
-struct matrix *matrix__mul(struct matrix *A, struct matrix *B) {
+struct matrix *matrix__mul(const struct matrix *A, const struct matrix *B) {
         if (A->cols != B->rows) {
                 LOG_ERROR("Shapes don't match for multiplication. [left: %ux%u][right: %ux%u]", A->rows, A->cols,
                           B->rows, B->cols);
@@ -211,7 +210,7 @@ struct matrix *matrix__mul(struct matrix *A, struct matrix *B) {
         return result;
 }
 
-struct matrix *matrix__transpose(struct matrix *mat) {
+struct matrix *matrix__transpose(const struct matrix *mat) {
         struct matrix *transposed = __malloc_matrix(matrix__len(mat));
         if (transposed == NULL) {
                 return NULL;
@@ -232,7 +231,7 @@ len_t matrix__len(const struct matrix *mat) {
 }
 
 struct matrix *
-matrix__multiply_one_by_second_transposed(struct matrix *left, struct matrix *right_transposed) {
+matrix__multiply_one_by_second_transposed(const struct matrix *left, const struct matrix *right_transposed) {
         size_t result_len = left->rows * right_transposed->rows;
         struct matrix *result = __malloc_matrix(result_len);
         if (result == NULL)
@@ -257,7 +256,7 @@ struct matrix * matrix__delete(struct matrix * mat) {
         return NULL;
 }
 
-void print_matrix_to_file(struct matrix *mat, const char *filename, const char *mode) {
+void debug_print_matrix_to_file(const struct matrix *mat, const char *filename, const char *mode) {
         FILE * file = fopen(filename, mode);
         for (int i = 0; i < mat->rows; ++i) {
                 for (int j = 0; j < mat->cols; ++j) {
@@ -278,6 +277,20 @@ struct matrix *matrix__eye(uint len) {
                 eye->elements[i * (len + 1)] = 1;
         }
         return eye;
+}
+
+void matrix__to_csv(const struct matrix *mat, const char *path) {
+        FILE * output_file = fopen(path, "w+");
+        if (output_file == NULL) {
+                LOG_ERROR("Failed to open file: %s", path);
+                return;
+        }
+        for (int i = 0; i < mat->rows; ++i) {
+                for (int j = 0; j < mat->cols - 1; ++j) {
+                        fprintf(output_file, "%.*lg,",DBL_DIG,  mat->elements[i*mat->cols + j]);
+                }
+                fprintf(output_file, "%.*lg\r\n",DBL_DIG,  mat->elements[i*mat->cols + mat->cols - 1]);
+        }
 }
 
 

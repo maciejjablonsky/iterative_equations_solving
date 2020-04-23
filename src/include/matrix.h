@@ -44,7 +44,7 @@ struct matrix *matrix__tril(struct matrix *mat, uint start_diagonal);
  */
 struct matrix *matrix__ones(len_t n);
 
-struct matrix *matrix__b(len_t n);
+struct matrix *matrix__b(len_t n, float magic_f);
 
 /**
  * @param elements_length
@@ -77,7 +77,7 @@ void matrix__multiply_by_scalar(struct matrix *mat, element_t multiplier);
  * @param[in] right right side matrix
  * @return pointer to left matrix, or NULL when error occured
  */
-struct matrix *matrix__sub(struct matrix *left, struct matrix *right);
+struct matrix *matrix__sub(struct matrix *left, const struct matrix *right);
 
 /**
  * @brief multiplies two matrices
@@ -85,7 +85,7 @@ struct matrix *matrix__sub(struct matrix *left, struct matrix *right);
  * @param[in] B right matrix
  * @return new allocated matrix with result
  */
-struct matrix *matrix__mul(struct matrix *A, struct matrix *B);
+struct matrix *matrix__mul(const struct matrix *A, const struct matrix *B);
 
 /**
  * @brief copies all matrix elements into new memory
@@ -105,7 +105,7 @@ struct matrix *matrix__diag(struct matrix *mat);
  * @param[in] mat source matrix
  * @return new allocated transposed matrix
  */
-struct matrix *matrix__transpose(struct matrix *mat);
+struct matrix *matrix__transpose(const struct matrix *mat);
 
 /**
  * @param[in] mat
@@ -121,12 +121,12 @@ len_t matrix__len(const struct matrix *mat);
  * @return new allocated matrix with result
  */
 struct matrix *
-matrix__multiply_one_by_second_transposed(struct matrix *left, struct matrix *right_transposed);
+matrix__multiply_one_by_second_transposed(const struct matrix *left, const struct matrix *right_transposed);
 
 /**
  * @brief frees memory of allocated matrix
  * @param mat matrix to delete
- * @return
+ * @return NULL
  */
 struct matrix *matrix__delete(struct matrix *mat);
 
@@ -136,14 +136,14 @@ struct matrix *matrix__delete(struct matrix *mat);
  * @param[in] right right matrix
  * @return pointer to left matrix or NULL when error occured
  */
-struct matrix * matrix__add(struct matrix * left, struct matrix *right);
+struct matrix * matrix__add(struct matrix * left, const struct matrix *right);
 
 /**
  * @brief appends print of matrix elements to file
  * @param[in] mat matrix to print
  * @param[in] filename file to store print
  */
-void print_matrix_to_file(struct matrix *mat, const char *filename, const char *mode);
+void debug_print_matrix_to_file(const struct matrix *mat, const char *filename, const char *mode);
 
 /**
  * @brief creates square matrix with diagonal elements set to 1 and others to 0
@@ -151,4 +151,11 @@ void print_matrix_to_file(struct matrix *mat, const char *filename, const char *
  * @return heap allocated matrix object with initialized elements
  */
 struct matrix * matrix__eye(uint len);
+
+/**
+ * @brief saves matrix in csv format file
+ * @param mat matrix to save
+ * @param path path to output file
+ */
+void matrix__to_csv(const struct matrix * mat, const char * path);
 #endif // MATRIX_H

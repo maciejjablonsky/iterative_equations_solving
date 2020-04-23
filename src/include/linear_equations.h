@@ -3,17 +3,47 @@
 #include "matrix.h"
 
 #ifdef TEST
-#define SOLUTION_EPSILON (1e-9)
+#define SOLUTION_EPSILON (1e-12)
 #else
 #define SOLUTION_EPSILON (1e-9)
 #endif
 
-struct matrix * lin_eq_sys__residuum(struct matrix * A, struct matrix * solution, struct matrix * b);
+struct lin_eq_sys_performance {
+    len_t matrix_size;
+    len_t iterations;
+    double hot_loop_time_seconds;
+    long double solution_norm;
+    double init_time_seconds;
+    double cleaning_time_seconds;
+    struct matrix * solution;
+};
+
+/**
+ *
+ * @param A
+ * @param solution
+ * @param b
+ * @return
+ */
+struct matrix * lin_eq_sys__residuum(const struct matrix *A, const struct matrix *solution, const struct matrix *b);
 
 
-struct matrix *lin_eq_sys__jacobi(struct matrix *A, struct matrix *b, int *iterations);
+struct matrix *lin_eq_sys__jacobi(struct matrix *A, struct matrix *b);
+
+void __lin_eq_sys_jacobi__init(struct matrix *A, struct matrix *b, struct matrix **x, struct matrix **D,
+                               struct matrix **L_U);
+
+void __lin_eq_sys_jacobi__end(struct matrix **D, struct matrix **L_U);
+
+void __lin_eq_sys_jacobi__hot_loop_step(struct matrix *L_U, struct matrix *D, struct matrix *b, struct matrix **x);
+
+struct lin_eq_sys_performance __lin_eq_sys_perf__jacobi(struct matrix *A, struct matrix *b);
 
 struct matrix * lin_eq_sys__gauss_seidel(struct matrix * A, struct matrix *b, int *iterations);
+
+void __lin_eq_sys_gauss_seidel__init();
+
+
 
 bool lin_eq_sys__is_solution_close_enough(struct matrix *A, struct matrix *x, struct matrix *b);
 
