@@ -155,7 +155,7 @@ void test_givenSystemOfLinearEquations_whenSolvingWithGaussSeidelMethod_thenResu
         givenSystemOfLinearEquations(A, b);
         int iterations = 0;
 
-        struct matrix *solution = lin_eq_sys__gauss_seidel(A, b, &iterations);
+        struct matrix *solution = lin_eq_sys__gauss_seidel(A, b);
 
         ASSERT_MATRIX_VALID_AND_AS_EXPECTED(expectedResult, solution);
 }
