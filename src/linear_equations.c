@@ -48,7 +48,6 @@ void __lin_eq_sys_jacobi__hot_loop_step(struct matrix *L_U, struct matrix *D, st
         matrix__multiply_by_scalar(x_next, -1);
         matrix__add(x_next, b);
         *x = lin_eq_sys__forward_substitution(D, x_next);
-//        matrix__delete(x_next);
 }
 
 struct matrix *lin_eq_sys__jacobi(struct matrix *A, struct matrix *b) {
@@ -56,7 +55,7 @@ struct matrix *lin_eq_sys__jacobi(struct matrix *A, struct matrix *b) {
         __lin_eq_sys_jacobi__init(A, b, &x, &D, &L_U);
 
         while (!lin_eq_sys__is_solution_close_enough(A, x, b)) {
-                __lin_eq_sys_jacobi__hot_loop_step(L_U, D, b, &x);
+                __lin_eq_sys_jacobi_optimized__hot_loop_step(L_U, D, b, &x);
         }
         __lin_eq_sys_jacobi__end(&D, &L_U);
         return x;
@@ -154,10 +153,11 @@ struct lin_eq_sys_performance __lin_eq_sys_perf__gauss_seidel(struct matrix *A, 
 
         perf.solution = x;
         struct matrix *residuum = lin_eq_sys__residuum(A, x, b);
-        perf.solution_norm = vector__norm(&vector_struct(
+        element_t norm = vector__norm(&vector_struct(
                 .elements = residuum->elements, .len = residuum->rows)
         );
         matrix__delete(residuum);
+        perf.solution_norm = norm;
 
         perf.cleaning_time_seconds = clock();
         __lin_eq_sys_gauss_seidel__end(&D_L, &U);
@@ -260,3 +260,45 @@ struct lin_eq_sys_performance __lin_eq_sys_perf__solve_using_LU_decomposition(st
         perf.solution = x;
         return perf;
 }
+
+struct lin_eq_sys_performance __lin_eq_sys_perf__jacobi_optimized(struct matrix *A, struct matrix *b) {
+        struct lin_eq_sys_performance perf;
+        perf.matrix_size = A->rows;
+
+        perf.init_time_seconds = clock();
+        struct matrix *x, *D, *L_U;
+        __lin_eq_sys_jacobi__init(A, b, &x, &D, &L_U);
+        perf.init_time_seconds = (clock() - perf.init_time_seconds) / CLOCKS_PER_SEC;
+
+        perf.iterations = 0;
+        perf.hot_loop_time_seconds = clock();
+        while (!lin_eq_sys__is_solution_close_enough(A, x, b)) {
+                __lin_eq_sys_jacobi_optimized__hot_loop_step(L_U, D, b, &x);
+                perf.iterations++;
+        }
+        perf.hot_loop_time_seconds = (clock() - perf.hot_loop_time_seconds) / CLOCKS_PER_SEC;
+        perf.solution = x;
+
+        struct matrix *residuum = lin_eq_sys__residuum(A, x, b);
+        element_t norm = vector__norm(&vector_struct(
+                .elements = residuum->elements, .len = residuum->rows)
+        );
+        matrix__delete(residuum);
+        perf.solution_norm = norm;
+
+        perf.cleaning_time_seconds = clock();
+        __lin_eq_sys_jacobi__end(&D, &L_U);
+        perf.cleaning_time_seconds = (clock() - perf.cleaning_time_seconds) / CLOCKS_PER_SEC;
+        return perf;
+}
+
+void __lin_eq_sys_jacobi_optimized__hot_loop_step(struct matrix *L_U, struct matrix *D, struct matrix *b,
+                                                  struct matrix **x) {
+        struct matrix *x_next = matrix__mul(L_U, *x);
+        matrix__delete(*x);
+        matrix__multiply_by_scalar(x_next, -1);
+        matrix__add(x_next, b);
+        *x = lin_eq_sys__forward_substitution_when_left_diagonal(D, x_next);
+        matrix__delete(x_next);
+}
+

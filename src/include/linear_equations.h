@@ -38,7 +38,11 @@ void __lin_eq_sys_jacobi__end(struct matrix **D, struct matrix **L_U);
 
 void __lin_eq_sys_jacobi__hot_loop_step(struct matrix *L_U, struct matrix *D, struct matrix *b, struct matrix **x);
 
+void __lin_eq_sys_jacobi_optimized__hot_loop_step(struct matrix *L_U, struct matrix *D, struct matrix *b, struct matrix **x);
+
 struct lin_eq_sys_performance __lin_eq_sys_perf__jacobi(struct matrix *A, struct matrix *b);
+
+struct lin_eq_sys_performance __lin_eq_sys_perf__jacobi_optimized(struct matrix *A, struct matrix *b);
 
 struct matrix *lin_eq_sys__gauss_seidel(struct matrix *A, struct matrix *b);
 

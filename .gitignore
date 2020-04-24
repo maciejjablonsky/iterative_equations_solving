@@ -6,3 +6,5 @@ build/*
 mybuild
 test/cmake-build-debug/
 src/cmake-build-debug/
+data_csv/
+src/.vscode/

@@ -293,4 +293,37 @@ void matrix__to_csv(const struct matrix *mat, const char *path) {
         }
 }
 
+void matrix__print_compact(const struct matrix *mat) {
+        const len_t max_len_to_print = 5;
+        len_t max_rows_to_print = max_len_to_print > mat->rows ? mat->rows : max_len_to_print;
+        len_t max_cols_to_print = max_len_to_print > mat->cols ? mat->cols : max_len_to_print;
+        printf("shape: [%ux%u]\n", mat->rows, mat->cols);
+        for (int i = 0; i < max_rows_to_print; ++i) {
+                for (int j = 0; j < max_cols_to_print; ++j) {
+                        printf("% 8.4lf\t", mat->elements[i*mat->cols + j]);
+                }
+                if (mat->cols > max_cols_to_print) {
+                        printf("...\t% 8.4lf", mat->elements[i*mat->cols + mat->cols - 1]);
+                }
+                putchar('\n');
+        }
+        if (mat->rows > max_rows_to_print) {
+                for (int i = 0; i < max_cols_to_print; ++i) {
+                        printf("%8s\t", "...");
+                }
+                if ( mat->cols > max_cols_to_print) {
+                        printf("...\t%8s", "...");
+                }
+                putchar('\n');
+                for (int i = 0; i < max_cols_to_print; ++i) {
+                        printf("% 8.4lf\t", mat->elements[(mat->rows - 1)*mat->cols + i]);
+                }
+                if (mat->cols> max_cols_to_print) {
+                        printf("...\t% 8.4lf", mat->elements[(mat->rows - 1)*mat->cols + mat->cols - 1]);
+                }
+                putchar('\n');
+        }
+        putchar('\n');
+}
+
 

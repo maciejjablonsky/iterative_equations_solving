@@ -2,12 +2,18 @@
 #define LOG_H
 
 #include <stdio.h>
+//
+//#define DEBUG
 
+#ifdef DEBUG
 #define LOG_ERROR(...) do {\
 fprintf(stderr, "[FILE: %s][LINE: %d] ", __FILE__, __LINE__);\
 fprintf(stderr, __VA_ARGS__);\
 fputc('\n', stderr);\
 } while(0)
+#else
+#define LOG_ERROR(...)
+#endif
 
 
 #define LOG(...) do{\

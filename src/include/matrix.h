@@ -158,4 +158,10 @@ struct matrix * matrix__eye(uint len);
  * @param path path to output file
  */
 void matrix__to_csv(const struct matrix * mat, const char * path);
+
+/**
+ * @brief prints matrix to stdout max to 5 elements in rows and cols
+ * @param mat matrix to print
+ */
+void matrix__print_compact(const struct matrix * mat);
 #endif // MATRIX_H
