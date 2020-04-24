@@ -6,5 +6,5 @@ include_directories(include)
 include_directories(internals)
 
 set(SOURCE_FILES matrix.c vector.c linear_equations.c)
-add_executable(time ${SOURCE_FILES} main.c)
-target_link_libraries(time m)
+add_executable(exercise_report ${SOURCE_FILES} main.c)
+target_link_libraries(exercise_report m)
