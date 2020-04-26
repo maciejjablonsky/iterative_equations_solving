@@ -376,7 +376,7 @@ struct matrix * (mat) = &(struct matrix){\
 void test_givenMatrix_whenMultipliedBy2_thenResultIs(void) {
         givenMatrix(mat);
 
-        matrix__multiply_by_scalar(mat, 2);
+        matrix__mul_by_scalar(mat, 2);
 
         ASSERT_MATRIX_VALID_AND_AS_EXPECTED(expectedResult, mat);
 }

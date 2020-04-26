@@ -45,7 +45,7 @@ void __lin_eq_sys_jacobi__end(struct matrix **D, struct matrix **L_U) {
 void __lin_eq_sys_jacobi__hot_loop_step(struct matrix *L_U, struct matrix *D, struct matrix *b, struct matrix **x) {
         struct matrix *x_next = matrix__mul(L_U, *x);
         matrix__delete(*x);
-        matrix__multiply_by_scalar(x_next, -1);
+        matrix__mul_by_scalar(x_next, -1);
         matrix__add(x_next, b);
         *x = lin_eq_sys__forward_substitution(D, x_next);
 }
@@ -113,7 +113,7 @@ void
 __lin_eq_sys_gauss_seidel__hot_loop_step(struct matrix *U, struct matrix *D_L, struct matrix *b, struct matrix **x) {
         struct matrix *x_next = matrix__mul(U, *x);
         matrix__delete(*x);
-        matrix__multiply_by_scalar(x_next, -1);
+        matrix__mul_by_scalar(x_next, -1);
         matrix__add(x_next, b);
         x_next = lin_eq_sys__forward_substitution(D_L, x_next);
         *x = x_next;
@@ -300,7 +300,7 @@ void __lin_eq_sys_jacobi_optimized__hot_loop_step(struct matrix *L_U, struct mat
                                                   struct matrix **x) {
         struct matrix *x_next = matrix__mul(L_U, *x);
         matrix__delete(*x);
-        matrix__multiply_by_scalar(x_next, -1);
+        matrix__mul_by_scalar(x_next, -1);
         matrix__add(x_next, b);
         *x = lin_eq_sys__forward_substitution_when_left_diagonal(D, x_next);
         matrix__delete(x_next);

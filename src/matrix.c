@@ -137,7 +137,7 @@ void matrix__zero_diag(struct matrix *mat) {
 }
 
 
-void matrix__multiply_by_scalar(struct matrix *mat, element_t multiplier) {
+void matrix__mul_by_scalar(struct matrix *mat, element_t multiplier) {
         len_t len = matrix__len(mat);
         for (int i = 0; i < len; ++i) {
                 mat->elements[i]  *= multiplier;

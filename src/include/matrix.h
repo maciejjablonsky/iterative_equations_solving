@@ -91,7 +91,7 @@ void matrix__zero_diag(struct matrix *mat);
  * @param[in, out] mat Multiplied matrix
  * @param multiplier Value by which matrix elements are multiplied
  */
-void matrix__multiply_by_scalar(struct matrix *mat, element_t multiplier);
+void matrix__mul_by_scalar(struct matrix *mat, element_t multiplier);
 
 /**
  * @brief Subtracts element by element right from left matrix and stores result in left
