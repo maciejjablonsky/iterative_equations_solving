@@ -110,80 +110,87 @@ struct matrix *matrix__sub(struct matrix *left, const struct matrix *right);
 struct matrix *matrix__mul(const struct matrix *A, const struct matrix *B);
 
 /**
- * @brief copies all matrix elements into new memory
- * @param[in] original source to copy
- * @return new allocated matrix with copy of #original
+ * @brief Copies all matrix elements into new memory
+ * @param[in] original Matrix to copy
+ * @return New allocated matrix with copy of \p original
  */
 struct matrix *matrix__deep_copy(const struct matrix *original);
 
 /**
- * @brief sets all elements except diagonal to zeros
- * @param[in, out] mat edited square matrix
- * @return pointer to #mat
+ * @brief Sets all elements except diagonal to zeros
+ * @param[in, out] mat Edited square matrix
+ * @return Pointer to \p mat
  */
 struct matrix *matrix__diag(struct matrix *mat);
 
 /**
- * @param[in] mat source matrix
- * @return new allocated transposed matrix
+ * @brief Transposes matrix
+ * @param[in] mat Source matrix
+ * @return Pointer to new transposed matrix
  */
 struct matrix *matrix__transpose(const struct matrix *mat);
 
 /**
- * @param[in] mat
- * @return product of matrix rows and columns
+ * @brief Calculates number of elements in \p mat
+ * @param[in] mat Matrix
+ * @return Product of matrix rows and columns
  */
 len_t matrix__len(const struct matrix *mat);
 
 /**
- * @brief   multiplies two matrices row by row
- *          if C = A*B, then C = A* B_transposed if multiplied row by row
- * @param[in] left left matrix
- * @param[in] right_transposed
- * @return new allocated matrix with result
+ * @brief Multiplies two matrices row by row
+ *
+ * If C = A*B, then C = A* B_transposed if multiplied row by row
+ * @param[in] left Left matrix
+ * @param[in] Right_transposed
+ * @return Pointer to new allocated matrix with result
  */
 struct matrix *
 matrix__multiply_one_by_second_transposed(const struct matrix *left, const struct matrix *right_transposed);
 
 /**
- * @brief frees memory of allocated matrix
- * @param mat matrix to delete
- * @return NULL
+ * @brief Frees memory of allocated \ref matrix and \ref matrix.elements
+ * @param mat Matrix to delete
+ * @return NULL, should be assigned to pointer which stored \p mat address
  */
 struct matrix *matrix__delete(struct matrix *mat);
 
 /**
- * @brief adds right matrix to left element by element and stores result in left matrix
- * @param[in, out] left left matrix
- * @param[in] right right matrix
- * @return pointer to left matrix or NULL when error occured
+ * @brief Adds right matrix to left element by element and stores result in left matrix
+ * @param[in, out] left Left matrix
+ * @param[in] right Right matrix
+ * @return Pointer to left matrix or NULL when error occurred
  */
 struct matrix * matrix__add(struct matrix * left, const struct matrix *right);
 
 /**
- * @brief appends print of matrix elements to file
- * @param[in] mat matrix to print
- * @param[in] filename file to store print
+ * @brief Prints matrix elements to file
+ *
+ * Depending on \p mode, "w" clears file before write, "a" appends to existing print
+ * @param[in] mat Matrix to print
+ * @param[in] path File to store print
+ * @param mode String with \ref FILE like mode to open file
  */
-void debug_print_matrix_to_file(const struct matrix *mat, const char *filename, const char *mode);
+void debug_print_matrix_to_file(const struct matrix *mat, const char *path, const char *mode);
 
 /**
- * @brief creates square matrix with diagonal elements set to 1 and others to 0
- * @param len number of rows or columns
- * @return heap allocated matrix object with initialized elements
+ * @brief Creates square matrix with diagonal elements set to 1 and others to 0
+ * @param len Number of rows or columns
+ * @return Pointer to new matrix with initialized elements
  */
 struct matrix * matrix__eye(uint len);
 
 /**
- * @brief saves matrix in csv format file
- * @param mat matrix to save
- * @param path path to output file
+ * @brief Saves matrix in csv format file
+ * @param mat Matrix to save
+ * @param path Path to output file
  */
 void matrix__to_csv(const struct matrix * mat, const char * path);
 
 /**
- * @brief prints matrix to stdout max to 5 elements in rows and cols
- * @param mat matrix to print
+ * @brief Prints matrix in such way so middle elements are replaced by "..." if rows/cols are too long to display
+ * @param[in] mat Matrix to print
+ * @param max_rows_cols Maximum number of elements to display
  */
 void matrix__print_compact(const struct matrix *mat, len_t max_rows_cols);
 #endif // MATRIX_H

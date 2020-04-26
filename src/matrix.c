@@ -256,8 +256,8 @@ struct matrix * matrix__delete(struct matrix * mat) {
         return NULL;
 }
 
-void debug_print_matrix_to_file(const struct matrix *mat, const char *filename, const char *mode) {
-        FILE * file = fopen(filename, mode);
+void debug_print_matrix_to_file(const struct matrix *mat, const char *path, const char *mode) {
+        FILE * file = fopen(path, mode);
         for (int i = 0; i < mat->rows; ++i) {
                 for (int j = 0; j < mat->cols; ++j) {
                         fprintf(file, "%.15lg\t", mat->elements[i*mat->cols + j]);
