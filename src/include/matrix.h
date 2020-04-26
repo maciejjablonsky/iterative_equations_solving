@@ -81,8 +81,8 @@ struct matrix *matrix__ones(len_t n);
 struct matrix *matrix__b(len_t n, float magic_f);
 
 /**
- * @brief sets diagonal elements to zero
- * @param[in,out] mat processed matrix
+ * @brief Sets diagonal elements to zero.
+ * @param[in,out] mat Edited matrix
  */
 void matrix__zero_diag(struct matrix *mat);
 
