@@ -10,5 +10,5 @@ data_csv/
 src/.vscode/
 report
 plots.py
-/doc/html/
-/doc/latex/
+doc/html/
+doc/latex/

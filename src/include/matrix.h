@@ -44,12 +44,12 @@ struct matrix *__calloc_matrix(len_t elements_length);
 struct matrix *matrix__gen_band(element_t *first_row, len_t len, len_t rows, len_t cols);
 
 /**
- * @brief extracts right triangular matrix from \p mat
- * All elements of \p mat are set to zero except elements above \p start_diag diagonal
+ * @brief Extracts right triangular matrix from \p mat.
  *
- * @param[in, out] mat edited square matrix
- * @param start_diag index of row above diagonal to start copying, 0 means diagonal
- * @return pointer to #mat or NULL when error occured
+ * All elements of \p mat are set to zero except elements above \p start_diag diagonal
+ * @param[in, out] mat Edited square matrix
+ * @param start_diag Index of diagonal to start extracting, 0 means main diagonal, 1 means one above main diagonal etc.
+ * @return Pointer to \p mat or NULL when error occurred
  */
 struct matrix *matrix__triu(struct matrix *mat, uint start_diag);
 
