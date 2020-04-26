@@ -87,25 +87,25 @@ struct matrix *matrix__b(len_t n, float magic_f);
 void matrix__zero_diag(struct matrix *mat);
 
 /**
- * @brief multiplies matrix element by element
- * @param[in, out] mat processed matrix
- * @param multiplier
+ * @brief Multiplies matrix element by element by \p multiplier
+ * @param[in, out] mat Multiplied matrix
+ * @param multiplier Value by which matrix elements are multiplied
  */
 void matrix__multiply_by_scalar(struct matrix *mat, element_t multiplier);
 
 /**
- * @brief subtracts element by element right from left matrix and stores result in left
- * @param[in,out] left left side matrix
- * @param[in] right right side matrix
- * @return pointer to left matrix, or NULL when error occured
+ * @brief Subtracts element by element right from left matrix and stores result in left
+ * @param[in,out] left Left side matrix
+ * @param[in] right Right side matrix
+ * @return Pointer to left matrix, or NULL when error occurred
  */
 struct matrix *matrix__sub(struct matrix *left, const struct matrix *right);
 
 /**
- * @brief multiplies two matrices
- * @param[in] A left matrix
- * @param[in] B right matrix
- * @return new allocated matrix with result
+ * @brief Multiplies two matrices
+ * @param[in] A Left matrix
+ * @param[in] B Right matrix
+ * @return Pointer to new \ref matrix with result
  */
 struct matrix *matrix__mul(const struct matrix *A, const struct matrix *B);
 
