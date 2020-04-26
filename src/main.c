@@ -1,8 +1,6 @@
 #include <stdio.h>
-#include "matrix.h"
 #include <stdlib.h>
-#include <time.h>
-#include "linear_equations.h"
+#include "performance_test.h"
 #include <math.h>
 #include <logging.h>
 
@@ -13,7 +11,7 @@
 #define MAGIC_f 5
 
 double perf_whole_time(struct lin_eq_sys_performance *data) {
-        return data->init_time_seconds + data->hot_loop_time_seconds + data->cleaning_time_seconds;
+        return data->init_time_seconds + data->kernel_time_seconds + data->cleaning_time_seconds;
 }
 
 void performance_data_to_csv(const char *path, struct lin_eq_sys_performance *data, len_t data_len) {
@@ -26,7 +24,7 @@ void performance_data_to_csv(const char *path, struct lin_eq_sys_performance *da
         fprintf(output, "%s,%s,%s,%s\r\n", "matrix_size", "iterations", "whole_time", "hot_loop_time");
         for (int i = 0; i < data_len; ++i) {
                 fprintf(output, "%u,%u,%.8lf,%.8lf\r\n", data[i].matrix_size, data[i].iterations,
-                        perf_whole_time(&data[i]), data[i].hot_loop_time_seconds);
+                        perf_whole_time(&data[i]), data[i].kernel_time_seconds);
         }
         fclose(output);
 }
@@ -55,7 +53,7 @@ void present_jacobi_performance() {
                 matrix__delete(A);
                 matrix__delete(b);
                 printf("\r%*u\t%*u\t%*.8lf\t%*.8lf ", w, perf_data[i].matrix_size, w, perf_data[i].iterations,
-                       w, perf_whole_time(&perf_data[i]), w, perf_data[i].hot_loop_time_seconds);
+                       w, perf_whole_time(&perf_data[i]), w, perf_data[i].kernel_time_seconds);
 
                 printf("%*s\n", (int) (10 * perf_whole_time(&perf_data[i])), "##");
         }
@@ -92,7 +90,7 @@ void present_gauss_seidel_performance() {
                 matrix__delete(A);
                 matrix__delete(b);
                 printf("\r%*u\t%*u\t%*.8lf\t%*.8lf ", w, perf_data[i].matrix_size, w, perf_data[i].iterations,
-                       w, perf_whole_time(&perf_data[i]), w, perf_data[i].hot_loop_time_seconds);
+                       w, perf_whole_time(&perf_data[i]), w, perf_data[i].kernel_time_seconds);
 
                 printf("%*s\n", (int) (ceil(10 * perf_whole_time(&perf_data[i]))), "##");
 
@@ -129,7 +127,7 @@ void present_LU_decomposition_performance() {
                 matrix__delete(A);
                 matrix__delete(b);
                 printf("\r%*u\t%*.8lf\t%*.8lf ", w, perf_data[i].matrix_size,
-                       w, perf_whole_time(&perf_data[i]), w, perf_data[i].hot_loop_time_seconds);
+                       w, perf_whole_time(&perf_data[i]), w, perf_data[i].kernel_time_seconds);
 
                 printf("%*s\n", (int) (10 * perf_whole_time(&perf_data[i])), "##");
         }
@@ -168,13 +166,13 @@ void exercise_B() {
         printf("%*s\t%*s\t%*s\t%*s\t%*s\n", w, "method", w, "matrix size [n]", w, "iterations [n]",
                w, "whole time [s]", w, "hot loop time [s]");
         printf("%*s\t%*u\t%*u\t%*.4lf\t%*.4lf\n", w, "Jacobi", w, jacobi.matrix_size, w, jacobi.iterations,
-               w, perf_whole_time(&jacobi), w, jacobi.hot_loop_time_seconds);
+               w, perf_whole_time(&jacobi), w, jacobi.kernel_time_seconds);
         printf("%*s\t%*u\t%*u\t%*.4lf\t%*.4lf\n", w, "Jacobi optimized", w, jacobi_opt.matrix_size, w,
                jacobi_opt.iterations,
-               w, perf_whole_time(&jacobi_opt), w, jacobi_opt.hot_loop_time_seconds);
+               w, perf_whole_time(&jacobi_opt), w, jacobi_opt.kernel_time_seconds);
         printf("%*s\t%*u\t%*u\t%*.4lf\t%*.4lf\n", w, "Gauss-Seidel", w, gauss_seidel.matrix_size, w,
                gauss_seidel.iterations,
-               w, perf_whole_time(&gauss_seidel), w, gauss_seidel.hot_loop_time_seconds);
+               w, perf_whole_time(&gauss_seidel), w, gauss_seidel.kernel_time_seconds);
 
         printf("Solution Jacobi:\n");
         struct matrix * jacobi_transposed = matrix__transpose(jacobi.solution);
@@ -203,17 +201,17 @@ void exercise_C(void) {
 
         struct lin_eq_sys_performance jacobi = __lin_eq_sys_perf__jacobi(A, b);
         printf("%*s\t%*u\t%*u\t%*.4lf\t%*.4lf\t%*.4Lf\n", w, "Jacobi", w, jacobi.matrix_size, w, jacobi.iterations,
-               w, perf_whole_time(&jacobi), w, jacobi.hot_loop_time_seconds, w, jacobi.solution_norm);
+               w, perf_whole_time(&jacobi), w, jacobi.kernel_time_seconds, w, jacobi.solution_norm);
 
         struct lin_eq_sys_performance jacobi_opt = __lin_eq_sys_perf__jacobi_optimized(A, b);
         printf("%*s\t%*u\t%*u\t%*.4lf\t%*.4lf\t%*.4Lf\n", w, "Jacobi optimized", w, jacobi_opt.matrix_size, w,
                jacobi_opt.iterations,
-               w, perf_whole_time(&jacobi_opt), w, jacobi_opt.hot_loop_time_seconds, w, jacobi_opt.solution_norm);
+               w, perf_whole_time(&jacobi_opt), w, jacobi_opt.kernel_time_seconds, w, jacobi_opt.solution_norm);
 
         struct lin_eq_sys_performance gauss_seidel = __lin_eq_sys_perf__gauss_seidel(A, b);
         printf("%*s\t%*u\t%*u\t%*.4lf\t%*.4lf\t%*.4Lf\n", w, "Gauss-Seidel", w, gauss_seidel.matrix_size, w,
                gauss_seidel.iterations,
-               w, perf_whole_time(&gauss_seidel), w, gauss_seidel.hot_loop_time_seconds, w, gauss_seidel.solution_norm);
+               w, perf_whole_time(&gauss_seidel), w, gauss_seidel.kernel_time_seconds, w, gauss_seidel.solution_norm);
 }
 
 void exercise_D(void) {
@@ -226,8 +224,8 @@ void exercise_D(void) {
         printf("%*s\t%*s\t%*s\t%*s\t%*s\n", w, "method", w, "matrix size [n]",
                w, "whole time [s]", 26, "decomposition + kernel [s]", w, "solution norm");
         printf("%*s\t%*u\t%*.4lf\t%*.4lf\t%*.10Le\n", w, "LU decomposition", w, lu.matrix_size,
-               w, lu.init_time_seconds + lu.decompositon_time_seconds + lu.hot_loop_time_seconds + lu.cleaning_time_seconds,
-               26, lu.hot_loop_time_seconds + lu.decompositon_time_seconds, w, lu.solution_norm);
+               w, lu.init_time_seconds + lu.decompositon_time_seconds + lu.kernel_time_seconds + lu.cleaning_time_seconds,
+               26, lu.kernel_time_seconds + lu.decompositon_time_seconds, w, lu.solution_norm);
 
         printf("\r\nSolution vector:\n");
         struct matrix * solution_transposed = matrix__transpose(lu.solution);
@@ -252,13 +250,13 @@ void exercise_E() {
                 struct matrix *b = matrix__b(N[i], MAGIC_f);
                 printf("%*u\t", w, N[i]);
                 jacobi[i] = __lin_eq_sys_perf__jacobi(A, b);
-                printf("%*.4lf\t", w, jacobi[i].hot_loop_time_seconds);
+                printf("%*.4lf\t", w, jacobi[i].kernel_time_seconds);
 
                 gauss_seidel[i] = __lin_eq_sys_perf__gauss_seidel(A,b);
-                printf("%*.4lf\t", w, gauss_seidel[i].hot_loop_time_seconds);
+                printf("%*.4lf\t", w, gauss_seidel[i].kernel_time_seconds);
 
                 lu[i] = __lin_eq_sys_perf__solve_using_LU_decomposition(A, b);
-                printf("%*.4lf", w, lu[i].hot_loop_time_seconds + lu[i].decompositon_time_seconds);
+                printf("%*.4lf", w, lu[i].kernel_time_seconds + lu[i].decompositon_time_seconds);
 
                 putchar('\n');
                 matrix__delete(A);
