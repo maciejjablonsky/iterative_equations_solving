@@ -92,14 +92,14 @@ struct matrix *matrix__triu(struct matrix *mat, uint start_diag) {
         return mat;
 }
 
-struct matrix *matrix__tril(struct matrix *mat, uint start_diagonal) {
+struct matrix *matrix__tril(struct matrix *mat, uint start_diag) {
         len_t rows = mat->rows;
         len_t cols = mat->cols;
-        for (uint i = 0; i < start_diagonal; ++i) {
+        for (uint i = 0; i < start_diag; ++i) {
                 memset(mat->elements + i * cols, 0, cols * sizeof(*mat->elements));
         }
         for (uint i = 0; i < rows; ++i) {
-                memset(mat->elements + (i + start_diagonal) * cols + i + 1, 0, (cols - i - 1) * sizeof(*mat->elements));
+                memset(mat->elements + (i + start_diag) * cols + i + 1, 0, (cols - i - 1) * sizeof(*mat->elements));
         }
         return mat;
 }

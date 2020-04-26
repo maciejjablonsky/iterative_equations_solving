@@ -54,12 +54,14 @@ struct matrix *matrix__gen_band(element_t *first_row, len_t len, len_t rows, len
 struct matrix *matrix__triu(struct matrix *mat, uint start_diag);
 
 /**
- * @brief extracts left triangular matrix from source and stores result in #mat
- * @param[in, out] mat edited square matrix
- * @param start_diagonal index of row below diagonal to start copying, 0 means diagonal
- * @return pointer to #mat or NULL when error occured
+ * @brief Extracts left triangular matrix from \p mat.
+ *
+ * All elements of \p mat are set to zero except elements below \p start_diag diagonal
+ * @param[in, out] mat Edited square matrix
+ * @param start_diag Index of diagonal to start extracting, 0 means main diagonal, 1 means one below main diagonal etd.
+ * @return Pointer to \p mat or NULL when error occurred
  */
-struct matrix *matrix__tril(struct matrix *mat, uint start_diagonal);
+struct matrix *matrix__tril(struct matrix *mat, uint start_diag);
 
 /**
  *
