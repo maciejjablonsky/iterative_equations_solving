@@ -171,10 +171,10 @@ bool lin_eq_sys__is_solution_close_enough(struct matrix *A, struct matrix *x, st
                 .elements = residuum->elements, .len = residuum->rows)
         );
         matrix__delete(residuum);
-        if (__isnanl(norm)) {
+        if (__isnan(norm)) {
                 LOG_ERROR("Norm is not a number.\n");
                 return true;
-        } else if (__isinfl(norm)) {
+        } else if (__isinf(norm)) {
                 LOG_ERROR("Norm reached infinity.\n");
                 return true;
         } else
@@ -247,8 +247,12 @@ struct lin_eq_sys_performance __lin_eq_sys_perf__solve_using_LU_decomposition(st
         struct matrix * L = matrix__eye(b->rows);
         struct matrix * b_copy = matrix__deep_copy(b);
         perf.init_time_seconds = (clock() - perf.init_time_seconds)/CLOCKS_PER_SEC;
-        perf.hot_loop_time_seconds = clock();
+
+        perf.decompositon_time_seconds = clock();
         lin_eq_sys__LU_decomposition(L, U);
+        perf.decompositon_time_seconds = (clock() - perf.decompositon_time_seconds)/CLOCKS_PER_SEC;
+
+        perf.hot_loop_time_seconds = clock();
         struct matrix * y = lin_eq_sys__forward_substitution(L, b_copy);
         struct matrix * x = lin_eq_sys__backward_substitution(U, y);
         perf.hot_loop_time_seconds = (clock() - perf.hot_loop_time_seconds)/CLOCKS_PER_SEC;

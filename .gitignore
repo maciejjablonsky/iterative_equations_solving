@@ -8,3 +8,7 @@ test/cmake-build-debug/
 src/cmake-build-debug/
 data_csv/
 src/.vscode/
+report
+plots.py
+/doc/html/
+/doc/latex/

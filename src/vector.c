@@ -25,16 +25,16 @@ vectors__dot_products(element_t *vectorsA, element_t *vectorsB, size_t number_of
 	return result;
 }
 
-static inline long double square(long double val) {
+static inline long double square(element_t val) {
         return val * val;
 }
 
-long double vector__norm(struct vector *vec) {
+element_t vector__norm(struct vector *vec) {
         long double norm = 0;
         for (int i = 0; i < vec->len; ++i) {
                 norm += square(vec->elements[i]);
         }
-        return sqrtl(norm);
+        return sqrt(norm);
 }
 
 

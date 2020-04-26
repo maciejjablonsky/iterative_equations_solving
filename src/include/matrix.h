@@ -3,31 +3,55 @@
 
 #include "vector.h"
 
+/** @file */
+
+/**
+ * @brief Object used to store data of used matrix
+ */
 struct matrix {
-    element_t *elements;
-    len_t rows;
-    len_t cols;
+    element_t *elements; /**< Continuous block of memory containing row-wise elements of matrix */
+    len_t rows; /**< Number of rows in matrix */
+    len_t cols; /**< Number of elements in each row */
 };
 
+/**
+ * @brief Macro allowing initialization matrix structure
+ */
 #define matrix_struct(...) (struct matrix){__VA_ARGS__}
 
 /**
- * @brief initializes band matrix
- * @param[in] first_row first n non zero elements from first row
- * @param first_row_len number of elements in @first_row
+ * @brief Allocates memory for matrix and \ref matrix.elements
+ * @param elements_length Number of elements in created matrix
+ * @return Pointer to matrix with \ref matrix.elements pointing to memory for elements
+ */
+struct matrix *__malloc_matrix(len_t elements_length);
+
+/**
+ * @brief Allocates zeroed memory for matrix and \ref matrix.elements
+ * @param elements_length Number of elements in created matrix
+ * @return Pointer to matrix with \ref matrix.elements pointing to memory for elements
+ */
+struct matrix *__calloc_matrix(len_t elements_length);
+
+/**
+ * @brief Initializes band matrix
+ * @param[in] first_row First \p len non zero elements from first row
+ * @param len Number of elements in \p first_row
  * @param rows number of rows in output matrix
  * @param cols number of rows in output matrix, must be the same as rows for now
  * @return struct matrix allocated on heap with elements set to demanded band pattern
  */
-struct matrix *matrix__gen_band(element_t *first_row, len_t first_row_len, len_t rows, len_t cols);
+struct matrix *matrix__gen_band(element_t *first_row, len_t len, len_t rows, len_t cols);
 
 /**
- * @brief extracts right triangular matrix from source and stores result in #mat
+ * @brief extracts right triangular matrix from \p mat
+ * All elements of \p mat are set to zero except elements above \p start_diag diagonal
+ *
  * @param[in, out] mat edited square matrix
- * @param start_diagonal index of row above diagonal to start copying, 0 means diagonal
+ * @param start_diag index of row above diagonal to start copying, 0 means diagonal
  * @return pointer to #mat or NULL when error occured
  */
-struct matrix *matrix__triu(struct matrix *mat, uint start_diagonal);
+struct matrix *matrix__triu(struct matrix *mat, uint start_diag);
 
 /**
  * @brief extracts left triangular matrix from source and stores result in #mat
@@ -45,18 +69,6 @@ struct matrix *matrix__tril(struct matrix *mat, uint start_diagonal);
 struct matrix *matrix__ones(len_t n);
 
 struct matrix *matrix__b(len_t n, float magic_f);
-
-/**
- * @param elements_length
- * @return pointer to allocated matrix with allocated memory for elements
- */
-struct matrix *__malloc_matrix(len_t elements_length);
-
-/**
- * @param elements_length
- * @return pointer to allocated matrix set to 0 with allocated memory for elements set to 0
- */
-struct matrix *__calloc_matrix(len_t elements_length);
 
 /**
  * @brief sets diagonal elements to zero
@@ -163,5 +175,5 @@ void matrix__to_csv(const struct matrix * mat, const char * path);
  * @brief prints matrix to stdout max to 5 elements in rows and cols
  * @param mat matrix to print
  */
-void matrix__print_compact(const struct matrix * mat);
+void matrix__print_compact(const struct matrix *mat, len_t max_rows_cols);
 #endif // MATRIX_H

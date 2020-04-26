@@ -24,7 +24,7 @@ element_t vector__dot_product(const element_t *vecA, const element_t *vecB, int 
 element_t *
 vectors__dot_products(element_t *vectorsA, element_t *vectorsB, size_t number_of_vectors, size_t each_vector_length);
 
-long double vector__norm(struct vector * vec);
+element_t vector__norm(struct vector * vec);
 
 
 #endif //VECTOR_H

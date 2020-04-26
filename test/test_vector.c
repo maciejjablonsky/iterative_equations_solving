@@ -1,3 +1,4 @@
+#include <matrix.h>
 #include "unity.h"
 #include "vector.h"
 
@@ -51,7 +52,7 @@ void test_givenTwoVectorsOfSameLengthWithBigValues_whenDotProduct_thenResultIsVa
 
 void test_vectorNorm(void) {
         givenVector(vec);
-
-        long double norm = vector__norm(vec);
+        struct matrix hua;
+        element_t norm = vector__norm(vec);
         TEST_ASSERT_EQUAL_DOUBLE(18.788294228055936, norm);
 }

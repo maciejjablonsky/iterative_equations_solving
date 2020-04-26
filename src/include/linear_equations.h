@@ -4,7 +4,7 @@
 #include "matrix.h"
 
 #ifdef TEST
-#define SOLUTION_EPSILON (1e-12)
+#define SOLUTION_EPSILON (1e-9)
 #else
 #define SOLUTION_EPSILON (1e-9)
 #endif
@@ -13,6 +13,7 @@ struct lin_eq_sys_performance {
     len_t matrix_size;
     len_t iterations;
     double hot_loop_time_seconds;
+    double decompositon_time_seconds;
     long double solution_norm;
     double init_time_seconds;
     double cleaning_time_seconds;
