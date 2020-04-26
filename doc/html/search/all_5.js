@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['matrix_28',['matrix',['../structmatrix.html',1,'']]],
+  ['matrix_2eh_29',['matrix.h',['../matrix_8h.html',1,'']]],
+  ['matrix_5f_5fadd_30',['matrix__add',['../matrix_8h.html#a714d22cf045d7e1a5f4dc2ff6178bd41',1,'matrix.c']]],
+  ['matrix_5f_5fb_31',['matrix__b',['../matrix_8h.html#a9a7893da0bdc345e7217339ba1ac6202',1,'matrix.c']]],
+  ['matrix_5f_5fdeep_5fcopy_32',['matrix__deep_copy',['../matrix_8h.html#a50f238817886998b6ee246cbd1f25007',1,'matrix.c']]],
+  ['matrix_5f_5fdelete_33',['matrix__delete',['../matrix_8h.html#a193db81b6fc9d7240c24eb1a64f5d33e',1,'matrix.c']]],
+  ['matrix_5f_5fdiag_34',['matrix__diag',['../matrix_8h.html#ae92146adfd8f1d9e325cf61e21613b7b',1,'matrix.c']]],
+  ['matrix_5f_5feye_35',['matrix__eye',['../matrix_8h.html#a641d776668b1688f7a12707b5b9f5cac',1,'matrix.c']]],
+  ['matrix_5f_5fgen_5fband_36',['matrix__gen_band',['../matrix_8h.html#a554b4fe70cac8aa15464e83e2623d6d3',1,'matrix.c']]],
+  ['matrix_5f_5flen_37',['matrix__len',['../matrix_8h.html#a3ea8a53eb10edb744475d051c363e0c0',1,'matrix.c']]],
+  ['matrix_5f_5fmul_38',['matrix__mul',['../matrix_8h.html#ab9019f07712c63a4d06afd85eaf5b127',1,'matrix.c']]],
+  ['matrix_5f_5fmul_5fby_5fscalar_39',['matrix__mul_by_scalar',['../matrix_8h.html#a8c398a6046d7c627a324502056dae787',1,'matrix.c']]],
+  ['matrix_5f_5fmultiply_5fone_5fby_5fsecond_5ftransposed_40',['matrix__multiply_one_by_second_transposed',['../matrix_8h.html#a5ef1a7f33ad0aa21c9dfe69bd9b283b7',1,'matrix.c']]],
+  ['matrix_5f_5fones_41',['matrix__ones',['../matrix_8h.html#a48c1aeb90a0960cf840bb334dccda9d2',1,'matrix.c']]],
+  ['matrix_5f_5fprint_5fcompact_42',['matrix__print_compact',['../matrix_8h.html#abc19be5411dfa4faaaa77ad960aefb64',1,'matrix.c']]],
+  ['matrix_5f_5fsub_43',['matrix__sub',['../matrix_8h.html#a6adfd0afe9a94411caccb38e1c1a294c',1,'matrix.c']]],
+  ['matrix_5f_5fto_5fcsv_44',['matrix__to_csv',['../matrix_8h.html#a10f44f4a0ea61ae7c3a4f332a8d70d2d',1,'matrix.c']]],
+  ['matrix_5f_5ftranspose_45',['matrix__transpose',['../matrix_8h.html#a9182b17e7ad08dbbf9eaeaa96fa1d8d5',1,'matrix.c']]],
+  ['matrix_5f_5ftril_46',['matrix__tril',['../matrix_8h.html#a8579370264549bab8451453497645a87',1,'matrix.c']]],
+  ['matrix_5f_5ftriu_47',['matrix__triu',['../matrix_8h.html#abd17b78a8045787e318f0c2b384df9d9',1,'matrix.c']]],
+  ['matrix_5f_5fzero_5fdiag_48',['matrix__zero_diag',['../matrix_8h.html#a47e34049e11d8ced2f7a5bd821a9fb40',1,'matrix.c']]],
+  ['matrix_5fstruct_49',['matrix_struct',['../matrix_8h.html#ab0ac26d7b8d122e29ac2d148ceef0679',1,'matrix.h']]]
+];
