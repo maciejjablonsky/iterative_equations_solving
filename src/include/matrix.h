@@ -64,9 +64,9 @@ struct matrix *matrix__triu(struct matrix *mat, uint start_diag);
 struct matrix *matrix__tril(struct matrix *mat, uint start_diag);
 
 /**
- *
- * @param n number of rows
- * @return vertical vector of n ones
+ * @brief Creates matrix of [\p n, 1] shape
+ * @param n Number of rows
+ * @return Vertical vector of n ones
  */
 struct matrix *matrix__ones(len_t n);
 
