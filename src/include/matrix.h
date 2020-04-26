@@ -70,6 +70,14 @@ struct matrix *matrix__tril(struct matrix *mat, uint start_diag);
  */
 struct matrix *matrix__ones(len_t n);
 
+/**
+ * @brief Creates vector of elements equal to sin(i*(\p magic_f + 1))
+ *
+ * Exercise specific function, not much to say.
+ * @param n Number of rows in vector.
+ * @param magic_f Magic value.
+ * @return New matrix with elements set to above sin() values.
+ */
 struct matrix *matrix__b(len_t n, float magic_f);
 
 /**
