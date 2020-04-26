@@ -30,52 +30,45 @@ struct matrix *__calloc_matrix(len_t elements_length) {
         return mat;
 }
 
-struct matrix *matrix__gen_band(element_t *first_row, len_t len, len_t rows, len_t cols) {
-        struct matrix *result = malloc(sizeof(*result));
-        element_t *elements = calloc(rows * cols, sizeof(*elements));
-
-        result->elements = elements;
+struct matrix *matrix__gen_band(element_t *values, len_t len, len_t rows, len_t cols) {
+        struct matrix *result = __calloc_matrix(rows * cols);
         result->rows = rows;
         result->cols = cols;
 
-        element_t *src_vector = first_row;
+        // fill all possible rows from upper left to lower right with full length values
         for (size_t i = 0,
                      length = rows - len + 1,
-                     vector_size = len * sizeof(*elements); i < length; ++i) {
-                memcpy(elements + i * (rows + 1), src_vector, vector_size);
+                     vector_size = len * sizeof(*result->elements); i < length; ++i) {
+                len_t row = i * rows;
+                memcpy(result->elements + row + i, values, vector_size);
         }
 
-        for (size_t i = 0,
-                     offset = (rows + 1) * (rows - len + 1),
-                     row_step = rows + 1,
-                     size = sizeof(*elements),
-                     elements_length = len - 1,
-                     steps = len - 1;
-             i < steps; ++i) {
-                memcpy(elements + offset + row_step * i, src_vector, (elements_length - i) * size);
+        // fill remaining gap in right lower corner
+        for (size_t i = 0, size = sizeof(*result->elements); i < len - 1; ++i) {
+                len_t row = (rows + 1) * (rows - len + 1);
+                len_t col = rows + 1;
+                memcpy(result->elements + row + col * i, values, (len - 1 - i) * size);
         }
 
-        element_t *reversed_elements = calloc(len - 1, sizeof(*reversed_elements));
-        for (size_t i = 0,
-                     elements_length = len - 1;
-             i < elements_length; ++i) {
-                reversed_elements[i] = src_vector[len - i - 1];
+        // reverse values without first element
+        element_t *reversed = calloc(len - 1, sizeof(*reversed));
+        for (size_t i = 0, elements_length = len - 1; i < elements_length; ++i) {
+                reversed[i] = values[len - i - 1];
         }
-        for (size_t offset = (len - 1) * rows,
-                     steps = rows - len + 1,
-                     vector_size = (len - 1) * sizeof(*reversed_elements),
-                     i = 0; i < steps; ++i) {
-                memcpy(elements + offset + (rows + 1) * i, reversed_elements, vector_size);
+
+        // fill all posibile rows from lower right to upper left with reversed full length values
+        for (size_t  steps = rows - len + 1, i = 0; i < steps; ++i) {
+                len_t row = (len - 1 + i) * rows;
+                memcpy(result->elements + row +  i, reversed, (len - 1) * sizeof(*reversed));
         }
+        // fil remaining gap in left upper corner
         for (size_t elements_length = len - 1,
-                     offset = (elements_length - 1) * rows,
                      i = 0,
-                     steps = elements_length - 1,
-                     size = sizeof(element_t);
-             i < steps; ++i) {
-                memcpy(elements + offset - rows * i, reversed_elements + i + 1, (elements_length - i - 1) * size);
+                     steps = elements_length - 1; i < steps; ++i) {
+                len_t row =(elements_length - 1 - i) * rows;
+                memcpy(result->elements + row, reversed + i + 1, (elements_length - i - 1) * sizeof(*reversed));
         }
-        free(reversed_elements);
+        free(reversed);
 
         return result;
 }
@@ -84,10 +77,10 @@ struct matrix *matrix__triu(struct matrix *mat, uint start_diag) {
         len_t cols = mat->cols;
         len_t rows = mat->rows;
         for (uint i = 0; i < rows - start_diag; ++i) {
-                memset(mat->elements+  i * cols, 0, (i + start_diag) * sizeof(*mat->elements));
+                memset(mat->elements + i * cols, 0, (i + start_diag) * sizeof(*mat->elements));
         }
         for (uint i = rows - start_diag; i < rows; ++i) {
-                memset(mat->elements + i*cols, 0, cols * sizeof(*mat->elements));
+                memset(mat->elements + i * cols, 0, cols * sizeof(*mat->elements));
         }
         return mat;
 }
@@ -140,7 +133,7 @@ void matrix__zero_diag(struct matrix *mat) {
 void matrix__mul_by_scalar(struct matrix *mat, element_t multiplier) {
         len_t len = matrix__len(mat);
         for (int i = 0; i < len; ++i) {
-                mat->elements[i]  *= multiplier;
+                mat->elements[i] *= multiplier;
 
         }
 }
@@ -158,7 +151,7 @@ struct matrix *matrix__sub(struct matrix *left, const struct matrix *right) {
         return left;
 }
 
-struct matrix * matrix__add(struct matrix * left, const struct matrix *right) {
+struct matrix *matrix__add(struct matrix *left, const struct matrix *right) {
         if (left->rows != right->rows || left->cols != right->cols) {
                 LOG_ERROR("Cannot subtract matrices of different sizes. [left: %ux%u][right: %ux%u]", left->rows,
                           left->cols, right->rows, right->cols);
@@ -190,8 +183,8 @@ struct matrix *matrix__diag(struct matrix *mat) {
         len_t rows = mat->rows;
         len_t cols = mat->cols;
         for (uint i = 0; i < rows; ++i) {
-                memset(mat->elements + i*cols, 0, i*sizeof(*mat->elements));
-                memset(mat->elements + i*cols + i + 1, 0, (cols - i - 1) *sizeof(element_t));
+                memset(mat->elements + i * cols, 0, i * sizeof(*mat->elements));
+                memset(mat->elements + i * cols + i + 1, 0, (cols - i - 1) * sizeof(element_t));
         }
         return mat;
 }
@@ -205,7 +198,7 @@ struct matrix *matrix__mul(const struct matrix *A, const struct matrix *B) {
         struct matrix *transposed_B = matrix__transpose(B);
 
 
-        struct matrix * result = matrix__multiply_one_by_second_transposed(A, transposed_B);
+        struct matrix *result = matrix__multiply_one_by_second_transposed(A, transposed_B);
         matrix__delete(transposed_B);
         return result;
 }
@@ -242,7 +235,7 @@ matrix__multiply_one_by_second_transposed(const struct matrix *left, const struc
         len_t row_len = left->cols;
         for (int i = 0; i < left->rows; ++i) {
                 for (int j = 0; j < right_transposed->rows; ++j) {
-                        result->elements[k] = vector__dot_product(left->elements + i*row_len,
+                        result->elements[k] = vector__dot_product(left->elements + i * row_len,
                                                                   right_transposed->elements + j * row_len, row_len);
                         ++k;
                 }
@@ -250,17 +243,17 @@ matrix__multiply_one_by_second_transposed(const struct matrix *left, const struc
         return result;
 }
 
-struct matrix * matrix__delete(struct matrix * mat) {
+struct matrix *matrix__delete(struct matrix *mat) {
         free(mat->elements);
         free(mat);
         return NULL;
 }
 
 void debug_print_matrix_to_file(const struct matrix *mat, const char *path, const char *mode) {
-        FILE * file = fopen(path, mode);
+        FILE *file = fopen(path, mode);
         for (int i = 0; i < mat->rows; ++i) {
                 for (int j = 0; j < mat->cols; ++j) {
-                        fprintf(file, "%.15lg\t", mat->elements[i*mat->cols + j]);
+                        fprintf(file, "%.15lg\t", mat->elements[i * mat->cols + j]);
                 }
                 fputc('\n', file);
         }
@@ -269,7 +262,7 @@ void debug_print_matrix_to_file(const struct matrix *mat, const char *path, cons
 }
 
 struct matrix *matrix__eye(uint len) {
-        struct matrix * eye = __calloc_matrix(len* len);
+        struct matrix *eye = __calloc_matrix(len * len);
         if (eye == NULL)
                 return NULL;
         eye->rows = eye->cols = len;
@@ -280,16 +273,16 @@ struct matrix *matrix__eye(uint len) {
 }
 
 void matrix__to_csv(const struct matrix *mat, const char *path) {
-        FILE * output_file = fopen(path, "w+");
+        FILE *output_file = fopen(path, "w+");
         if (output_file == NULL) {
                 LOG_ERROR("Failed to open file: %s", path);
                 return;
         }
         for (int i = 0; i < mat->rows; ++i) {
                 for (int j = 0; j < mat->cols - 1; ++j) {
-                        fprintf(output_file, "%.*lg,",DBL_DIG,  mat->elements[i*mat->cols + j]);
+                        fprintf(output_file, "%.*lg,", DBL_DIG, mat->elements[i * mat->cols + j]);
                 }
-                fprintf(output_file, "%.*lg\r\n",DBL_DIG,  mat->elements[i*mat->cols + mat->cols - 1]);
+                fprintf(output_file, "%.*lg\r\n", DBL_DIG, mat->elements[i * mat->cols + mat->cols - 1]);
         }
 }
 
@@ -300,10 +293,10 @@ void matrix__print_compact(const struct matrix *mat, len_t max_rows_cols) {
         printf("shape: [%ux%u]\n", mat->rows, mat->cols);
         for (int i = 0; i < max_rows_to_print; ++i) {
                 for (int j = 0; j < max_cols_to_print; ++j) {
-                        printf("% 8.4lf\t", mat->elements[i*mat->cols + j]);
+                        printf("% 8.4lf\t", mat->elements[i * mat->cols + j]);
                 }
                 if (mat->cols > max_cols_to_print) {
-                        printf("...\t% 8.4lf", mat->elements[i*mat->cols + mat->cols - 1]);
+                        printf("...\t% 8.4lf", mat->elements[i * mat->cols + mat->cols - 1]);
                 }
                 putchar('\n');
         }
@@ -311,15 +304,15 @@ void matrix__print_compact(const struct matrix *mat, len_t max_rows_cols) {
                 for (int i = 0; i < max_cols_to_print; ++i) {
                         printf("%8s\t", "...");
                 }
-                if ( mat->cols > max_cols_to_print) {
+                if (mat->cols > max_cols_to_print) {
                         printf("\u0971\u00b7.\t%8s", "...");
                 }
                 putchar('\n');
                 for (int i = 0; i < max_cols_to_print; ++i) {
-                        printf("% 8.4lf\t", mat->elements[(mat->rows - 1)*mat->cols + i]);
+                        printf("% 8.4lf\t", mat->elements[(mat->rows - 1) * mat->cols + i]);
                 }
-                if (mat->cols> max_cols_to_print) {
-                        printf("...\t% 8.4lf", mat->elements[(mat->rows - 1)*mat->cols + mat->cols - 1]);
+                if (mat->cols > max_cols_to_print) {
+                        printf("...\t% 8.4lf", mat->elements[(mat->rows - 1) * mat->cols + mat->cols - 1]);
                 }
                 putchar('\n');
         }

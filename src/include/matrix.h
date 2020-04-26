@@ -35,13 +35,13 @@ struct matrix *__calloc_matrix(len_t elements_length);
 
 /**
  * @brief Initializes band matrix
- * @param[in] first_row First \p len non zero elements from first row
- * @param len Number of elements in \p first_row
+ * @param[in] values Length of non zero elements from values
+ * @param len Number of elements in \p values
  * @param rows number of rows in output matrix
  * @param cols number of rows in output matrix, must be the same as rows for now
  * @return struct matrix allocated on heap with elements set to demanded band pattern
  */
-struct matrix *matrix__gen_band(element_t *first_row, len_t len, len_t rows, len_t cols);
+struct matrix *matrix__gen_band(element_t *values, len_t len, len_t rows, len_t cols);
 
 /**
  * @brief Extracts right triangular matrix from \p mat.
